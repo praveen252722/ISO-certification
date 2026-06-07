@@ -15,7 +15,6 @@ interface ProjectCardProps {
 }
 
 export function ProjectCard({ title, image, description, date, index }: ProjectCardProps) {
-  const [imageLoaded, setImageLoaded] = useState(false);
   const [imageFailed, setImageFailed] = useState(false);
 
   return (
@@ -26,8 +25,7 @@ export function ProjectCard({ title, image, description, date, index }: ProjectC
           <img
             src={image}
             alt={title}
-            className={`absolute inset-0 h-full w-full object-cover transition duration-700 hover:scale-105 ${imageLoaded ? "opacity-100" : "opacity-0"}`}
-            onLoad={() => setImageLoaded(true)}
+            className="absolute inset-0 h-full w-full object-cover transition duration-700 hover:scale-105"
             onError={() => setImageFailed(true)}
           />
         ) : null}
