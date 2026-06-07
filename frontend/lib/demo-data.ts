@@ -45,7 +45,7 @@ export const processSteps = [
   },
   {
     title: "Document Review",
-    description: "Admins and auditors review policy files, SOPs, evidence, and corrective actions with complete audit history.",
+    description: "Auditors review policy files, SOPs, evidence, and corrective actions with complete audit history.",
     icon: ClipboardCheck
   },
   {

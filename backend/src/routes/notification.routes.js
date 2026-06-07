@@ -8,5 +8,5 @@ export const notificationRoutes = Router();
 
 notificationRoutes.use(authenticate);
 notificationRoutes.get("/", listNotifications);
-notificationRoutes.post("/", authorize("SUPER_ADMIN", "ADMIN"), body("recipient").isMongoId(), body("title").notEmpty(), body("message").notEmpty(), validate, sendNotification);
+notificationRoutes.post("/", authorize("AUDITOR"), body("recipient").isMongoId(), body("title").notEmpty(), body("message").notEmpty(), validate, sendNotification);
 notificationRoutes.patch("/:id/read", markRead);

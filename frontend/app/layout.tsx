@@ -6,8 +6,8 @@ import { ThemeProvider } from "@/components/theme-provider";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "ISO Certification Management System",
-  description: "Enterprise ISO certification, audit, certificate, analytics, and verification platform."
+  title: "VJ International Certifications",
+  description: "ISO certification services in Hyderabad by VJ International Certifications."
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

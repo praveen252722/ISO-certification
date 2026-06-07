@@ -4,5 +4,5 @@ import { authenticate, authorize } from "../middleware/auth.middleware.js";
 
 export const analyticsRoutes = Router();
 
-analyticsRoutes.use(authenticate, authorize("SUPER_ADMIN", "ADMIN"));
+analyticsRoutes.use(authenticate, authorize("AUDITOR"));
 analyticsRoutes.get("/overview", overview);

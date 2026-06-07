@@ -40,8 +40,6 @@ The frontend includes local demo data for UI exploration. Backend seed data can 
 npm run seed
 ```
 
-Admin panel route: `/admin`  
-Default admin access: username `admin`, password `admin`
 
 ## Production Notes
 

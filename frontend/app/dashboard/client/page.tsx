@@ -32,7 +32,7 @@ export default function ClientDashboardPage() {
         <Card>
           <CardHeader><CardTitle>Application status</CardTitle></CardHeader>
           <CardContent className="grid gap-5">
-            {["Company profile", "Documents uploaded", "Audit scheduled", "Admin approval", "Certificate issued"].map((step, index) => (
+            {["Company profile", "Documents uploaded", "Audit scheduled", "Certification review", "Certificate issued"].map((step, index) => (
               <div key={step}>
                 <div className="mb-2 flex justify-between text-sm font-semibold"><span>{step}</span><span>{index < 3 ? "Complete" : "Pending"}</span></div>
                 <Progress value={index < 3 ? 100 : index === 3 ? 45 : 0} />

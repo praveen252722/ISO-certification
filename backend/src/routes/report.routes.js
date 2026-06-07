@@ -6,7 +6,7 @@ import { asyncHandler } from "../utils/asyncHandler.js";
 
 export const reportRoutes = Router();
 
-reportRoutes.use(authenticate, authorize("SUPER_ADMIN", "ADMIN", "AUDITOR"));
+reportRoutes.use(authenticate, authorize("AUDITOR"));
 reportRoutes.get(
   "/",
   asyncHandler(async (_req, res) => {

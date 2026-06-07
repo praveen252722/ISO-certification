@@ -21,8 +21,6 @@ await Promise.all([
   Testimonial.deleteMany({})
 ]);
 
-const superAdmin = await User.create({ name: "Super Admin", username: "superadmin", email: "superadmin@iso.example", password: "Password123!", role: "SUPER_ADMIN", phone: "+919876543210" });
-const admin = await User.create({ name: "Admin Manager", username: "admin", email: "admin@iso.example", password: "admin", role: "ADMIN", phone: "+919876543211" });
 const auditor = await User.create({ name: "Lead Auditor", email: "auditor@iso.example", password: "Password123!", role: "AUDITOR", phone: "+919876543212" });
 const client = await User.create({ name: "Priya Nair", email: "client@iso.example", password: "Password123!", role: "CLIENT", phone: "+919876543213" });
 
@@ -59,7 +57,7 @@ await Certificate.create({
   certificationType: "ISO 9001",
   issueDate: new Date("2026-02-14"),
   expiryDate: new Date("2029-02-13"),
-  issuedBy: admin._id
+  issuedBy: auditor._id
 });
 
 await Audit.create({
@@ -90,7 +88,6 @@ await Testimonial.create({
 });
 
 console.log("Seed complete");
-console.log("Admin panel: username admin, password admin");
-console.log("Other accounts: superadmin@iso.example, auditor@iso.example, client@iso.example");
-console.log("Other password: Password123!");
+console.log("Accounts: auditor@iso.example, client@iso.example");
+console.log("Password: Password123!");
 process.exit(0);

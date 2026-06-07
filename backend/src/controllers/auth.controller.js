@@ -14,7 +14,6 @@ export const registerRules = [
 ];
 
 export const loginRules = [body("email").isEmail(), body("password").notEmpty()];
-export const adminLoginRules = [body("username").notEmpty(), body("password").notEmpty()];
 
 export const register = asyncHandler(async (req, res) => {
   const exists = await User.exists({ email: req.body.email });
@@ -28,16 +27,6 @@ export const register = asyncHandler(async (req, res) => {
 export const login = asyncHandler(async (req, res) => {
   const user = await User.findOne({ email: req.body.email }).select("+password");
   if (!user || !(await user.comparePassword(req.body.password))) throw new ApiError(401, "Invalid email or password");
-
-  user.lastLoginAt = new Date();
-  await user.save();
-  const token = signAccessToken(user);
-  res.json({ success: true, token, user: sanitizeUser(user) });
-});
-
-export const adminLogin = asyncHandler(async (req, res) => {
-  const user = await User.findOne({ username: req.body.username.toLowerCase(), role: { $in: ["SUPER_ADMIN", "ADMIN"] } }).select("+password");
-  if (!user || !(await user.comparePassword(req.body.password))) throw new ApiError(401, "Invalid admin username or password");
 
   user.lastLoginAt = new Date();
   await user.save();

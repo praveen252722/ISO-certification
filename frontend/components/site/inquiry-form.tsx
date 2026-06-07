@@ -54,36 +54,38 @@ ${formData.message}`;
   }
 
   return (
-    <form onSubmit={handleSubmit} className="grid gap-4">
-      <Input
-        name="name"
-        value={formData.name}
-        onChange={(event) => updateField("name", event.target.value)}
-        placeholder="Full name"
-        required
-      />
-      <Input
-        name="company"
-        value={formData.company}
-        onChange={(event) => updateField("company", event.target.value)}
-        placeholder="Company name"
-        required
-      />
-      <Input
-        name="email"
-        type="email"
-        value={formData.email}
-        onChange={(event) => updateField("email", event.target.value)}
-        placeholder="Email address"
-        required
-      />
-      <Input
-        name="phone"
-        value={formData.phone}
-        onChange={(event) => updateField("phone", event.target.value)}
-        placeholder="Phone or WhatsApp number"
-        required
-      />
+    <form onSubmit={handleSubmit} className="grid gap-6">
+      <div className="grid gap-5 xl:grid-cols-2">
+        <Input
+          name="name"
+          value={formData.name}
+          onChange={(event) => updateField("name", event.target.value)}
+          placeholder="Full name"
+          required
+        />
+        <Input
+          name="company"
+          value={formData.company}
+          onChange={(event) => updateField("company", event.target.value)}
+          placeholder="Company name"
+          required
+        />
+        <Input
+          name="email"
+          type="email"
+          value={formData.email}
+          onChange={(event) => updateField("email", event.target.value)}
+          placeholder="Email address"
+          required
+        />
+        <Input
+          name="phone"
+          value={formData.phone}
+          onChange={(event) => updateField("phone", event.target.value)}
+          placeholder="Phone number"
+          required
+        />
+      </div>
       <Input
         name="isoType"
         value={formData.isoType}
@@ -95,10 +97,11 @@ ${formData.message}`;
         name="message"
         value={formData.message}
         onChange={(event) => updateField("message", event.target.value)}
-        placeholder="Your requirement"
+        placeholder="Tell us about your certification requirement"
+        className="min-h-32"
         required
       />
-      <Button type="submit">
+      <Button type="submit" className="h-11 w-full">
         <MessageSquareText className="h-4 w-4" /> {buttonLabel}
       </Button>
     </form>

@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useState } from "react";
-import { Menu, ShieldCheck, X } from "lucide-react";
+import { Award, Menu, X } from "lucide-react";
 import { navItems } from "@/lib/demo-data";
 
 export function SiteHeader() {
@@ -12,12 +12,12 @@ export function SiteHeader() {
     <header className="sticky top-0 z-50 border-b border-white/15 bg-gradient-to-r from-sky-900 via-sky-700 to-cyan-600 text-white shadow-lg">
       <div className="flex min-h-20 items-center justify-between px-4 lg:px-6">
         <Link href="/" className="flex min-w-0 items-center gap-3">
-          <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full border-2 border-amber-300 bg-white text-sky-800 shadow-md">
-            <ShieldCheck className="h-7 w-7" />
+          <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full border-2 border-amber-300 bg-slate-950 text-amber-300 shadow-md">
+            <Award className="h-7 w-7" />
           </div>
           <div className="min-w-0">
-            <p className="truncate text-xl font-extrabold uppercase tracking-normal md:text-2xl">ISO Certification Authority</p>
-            <p className="truncate text-sm font-medium text-sky-50 md:text-base">Compliance, audits, certificates and verification</p>
+            <p className="truncate text-xl font-extrabold uppercase tracking-normal md:text-2xl">VJ International Certifications</p>
+            <p className="truncate text-sm font-medium text-sky-50 md:text-base">Global Excellence | Trust | Assurance</p>
           </div>
         </Link>
 

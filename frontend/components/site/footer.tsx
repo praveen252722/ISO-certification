@@ -14,12 +14,12 @@ export function SiteFooter() {
               <ShieldCheck />
             </div>
             <div>
-              <p className="font-extrabold uppercase">ISO Certification Authority</p>
-              <p className="text-sm text-slate-300">Enterprise certification management</p>
+              <p className="font-extrabold uppercase">VJ International Certifications</p>
+              <p className="text-sm text-slate-300">Global Excellence | Trust | Assurance</p>
             </div>
           </div>
           <p className="max-w-sm text-sm leading-6 text-slate-300">
-            Apply, audit, approve, generate, renew, and verify ISO certificates from one secure platform.
+            Professional ISO certification support, documentation guidance, audit coordination, and certificate verification.
           </p>
           <div className="mt-5 flex gap-2">
             {[Facebook, Twitter, Linkedin].map((Icon, index) => (
@@ -44,9 +44,9 @@ export function SiteFooter() {
         <div>
           <h3 className="mb-4 font-semibold">Company Details</h3>
           <div className="grid gap-3 text-sm text-slate-300">
-            <span className="flex gap-2"><MapPin className="h-4 w-4" /> Hyderabad, Telangana, India</span>
-            <span className="flex gap-2"><Phone className="h-4 w-4" /> +91 98765 43210</span>
-            <span className="flex gap-2"><Mail className="h-4 w-4" /> support@isocertify.example</span>
+            <span className="flex gap-2"><MapPin className="h-4 w-4" /> 2-122/181/1, Sriram Nagar, Shamshiguda, Kukatpally, Hyderabad 500072</span>
+            <span className="flex gap-2"><Phone className="h-4 w-4" /> +91 73861 81914, +91 70950 81914</span>
+            <span className="flex gap-2"><Mail className="h-4 w-4" /> vjinternationalcertifications@example.com</span>
           </div>
         </div>
 
@@ -60,7 +60,7 @@ export function SiteFooter() {
         </div>
       </div>
       <div className="border-t border-slate-800 py-4 text-center text-sm text-slate-400">
-        © 2026 ISO Certification Management System. All rights reserved.
+        © 2026 VJ International Certifications. All rights reserved.
       </div>
     </footer>
   );

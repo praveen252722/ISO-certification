@@ -7,7 +7,7 @@ import { validate } from "../middleware/validate.middleware.js";
 export const applicationRoutes = Router();
 
 applicationRoutes.use(authenticate);
-applicationRoutes.get("/", authorize("SUPER_ADMIN", "ADMIN", "AUDITOR"), listApplications);
+applicationRoutes.get("/", authorize("AUDITOR"), listApplications);
 applicationRoutes.post(
   "/",
   authorize("CLIENT"),
@@ -17,4 +17,4 @@ applicationRoutes.post(
   validate,
   createApplication
 );
-applicationRoutes.patch("/:id/status", authorize("SUPER_ADMIN", "ADMIN"), body("status").notEmpty(), validate, updateApplicationStatus);
+applicationRoutes.patch("/:id/status", authorize("AUDITOR"), body("status").notEmpty(), validate, updateApplicationStatus);

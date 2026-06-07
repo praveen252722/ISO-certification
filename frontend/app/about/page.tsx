@@ -1,26 +1,30 @@
 import { PublicLayout } from "@/components/site/public-layout";
+import { GoogleMapsShowcase } from "@/components/site/google-maps-showcase";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import Link from "next/link";
 
 export default function AboutPage() {
   return (
     <PublicLayout>
       <section className="bg-white py-16 dark:bg-slate-950">
         <div className="container grid gap-10 lg:grid-cols-[0.95fr_1.05fr] lg:items-center">
-          <div>
+          <div className="animate-reveal-up">
             <Badge variant="outline">About us</Badge>
-            <h1 className="mt-4 max-w-4xl text-4xl font-extrabold tracking-normal">A certification authority built for reliable ISO compliance and transparent audit delivery.</h1>
+            <h1 className="mt-4 max-w-4xl text-4xl font-extrabold tracking-normal">VJ International Certifications, Hyderabad</h1>
             <p className="mt-6 leading-8 text-muted-foreground">
-              ISO Certification Management System supports organizations through the full certification lifecycle: application review, document control, auditor assignment, evidence validation, audit reporting, certificate issuance, renewal reminders, and public certificate verification.
+              VJ International Certifications provides ISO certification support with the promise of Global Excellence, Trust, and Assurance. The company helps organizations prepare documentation, coordinate audit readiness, manage certification applications, and maintain clear verification records.
             </p>
             <p className="mt-4 leading-8 text-muted-foreground">
-              Our team combines certification operations, quality management experience, digital workflow design, and customer support to help companies maintain confidence across ISO 9001, ISO 14001, ISO 45001, ISO 27001, ISO 22000, and related standards.
+              Led by Proprietor T. Gabriel, the team works with clients across quality, safety, environmental, food safety, and information security standards. The office is located at 2-122/181/1, Sriram Nagar, Shamshiguda, Kukatpally, Hyderabad 500072.
             </p>
+            <div className="mt-6 flex flex-col gap-3 sm:flex-row">
+              <Button asChild><Link href="/contact">Contact VJ Certifications</Link></Button>
+              <Button asChild variant="outline"><a href="https://maps.app.goo.gl/Bt4KS8WU1Szv6M2NA" target="_blank" rel="noreferrer">Open Google Map</a></Button>
+            </div>
           </div>
-          <div className="grid gap-4 sm:grid-cols-2">
-            <div className="h-64 rounded-lg bg-cover bg-center shadow-soft" style={{ backgroundImage: "url(https://images.unsplash.com/photo-1556761175-4b46a572b786?auto=format&fit=crop&w=900&q=80)" }} />
-            <div className="h-64 rounded-lg bg-cover bg-center shadow-soft sm:mt-10" style={{ backgroundImage: "url(https://images.unsplash.com/photo-1552664730-d307ca884978?auto=format&fit=crop&w=900&q=80)" }} />
-          </div>
+          <GoogleMapsShowcase compact />
         </div>
       </section>
 
