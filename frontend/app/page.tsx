@@ -87,7 +87,7 @@ export default function HomePage() {
       <section className="hero-grid relative overflow-hidden bg-slate-950 text-white">
         <div className="absolute inset-0 gold-radial" />
         <div className="absolute left-1/2 top-16 h-72 w-72 rounded-full bg-amber-400/30 blur-3xl animate-glow-pulse" />
-        <div className="absolute bottom-20 right-16 h-56 w-56 rounded-full bg-cyan-400/20 blur-3xl animate-glow-pulse" />
+        <div className="absolute bottom-20 right-16 h-56 w-56 rounded-full bg-[#0f766e]/25 blur-3xl animate-glow-pulse" />
         <div className="container relative grid min-h-[680px] items-center gap-10 py-16 lg:grid-cols-[1fr_0.85fr]">
           <div className="animate-reveal-up">
             <Badge variant="warning" className="mb-5">ISO certification services in Hyderabad</Badge>
@@ -96,10 +96,10 @@ export default function HomePage() {
                 VJ International Certifications
               </span>
             </h1>
-            <p className="mt-5 max-w-2xl text-lg leading-8 text-sky-50">
+            <p className="mt-5 max-w-2xl text-lg leading-8 text-[#fff6d6]">
               Global Excellence | Trust | Assurance. Professional ISO documentation, certification guidance, audit coordination, and verification support led by Proprietor T. Gabriel.
             </p>
-            <div className="mt-5 grid gap-3 text-sm font-semibold text-sky-50 sm:grid-cols-2">
+            <div className="mt-5 grid gap-3 text-sm font-semibold text-[#fff6d6] sm:grid-cols-2">
               <span className="flex items-center gap-2"><Phone className="h-4 w-4 text-amber-300" /> +91 73861 81914</span>
               <span className="flex items-center gap-2"><Phone className="h-4 w-4 text-amber-300" /> +91 70950 81914</span>
               <span className="flex items-start gap-2 sm:col-span-2"><MapPin className="mt-1 h-4 w-4 shrink-0 text-amber-300" /> 2-122/181/1, Sriram Nagar, Shamshiguda, Kukatpally, Hyderabad 500072</span>
@@ -116,7 +116,7 @@ export default function HomePage() {
               {counters.map((item) => (
                 <div key={item.label} className="rounded-lg border border-white/15 bg-white/10 p-4 backdrop-blur">
                   <p className="text-2xl font-extrabold">{item.value}</p>
-                  <p className="mt-1 text-xs font-medium text-sky-100">{item.label}</p>
+                  <p className="mt-1 text-xs font-medium text-[#fff0bf]">{item.label}</p>
                 </div>
               ))}
             </div>

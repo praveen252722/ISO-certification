@@ -8,6 +8,11 @@ const inter = Inter({ subsets: ["latin"] });
 export const metadata: Metadata = {
   title: "VJ International Certifications",
   description: "ISO certification services in Hyderabad by VJ International Certifications.",
+  icons: {
+    icon: "/images/brand/vj-international-logo.jpeg",
+    shortcut: "/images/brand/vj-international-logo.jpeg",
+    apple: "/images/brand/vj-international-logo.jpeg"
+  },
   verification: {
     google: "RRt5vK6KHMBiEf0dJA3A_DW2SyNMsT9HbPeQT2uWLKM"
   }

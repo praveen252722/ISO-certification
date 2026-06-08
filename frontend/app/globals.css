@@ -3,44 +3,44 @@
 @tailwind utilities;
 
 :root {
-  --background: 210 40% 98%;
-  --foreground: 222 47% 11%;
+  --background: 44 54% 97%;
+  --foreground: 178 64% 10%;
   --card: 0 0% 100%;
-  --card-foreground: 222 47% 11%;
-  --primary: 204 82% 38%;
+  --card-foreground: 178 64% 10%;
+  --primary: 178 82% 22%;
   --primary-foreground: 0 0% 100%;
-  --secondary: 168 58% 34%;
+  --secondary: 43 62% 43%;
   --secondary-foreground: 0 0% 100%;
-  --muted: 210 40% 94%;
-  --muted-foreground: 215 16% 47%;
-  --accent: 43 96% 56%;
-  --accent-foreground: 222 47% 11%;
+  --muted: 43 45% 92%;
+  --muted-foreground: 180 12% 40%;
+  --accent: 45 83% 54%;
+  --accent-foreground: 178 64% 10%;
   --destructive: 0 84% 60%;
   --destructive-foreground: 0 0% 100%;
   --border: 214 32% 91%;
   --input: 214 32% 91%;
-  --ring: 204 82% 38%;
+  --ring: 178 82% 22%;
   --radius: 0.5rem;
 }
 
 .dark {
-  --background: 222 47% 8%;
-  --foreground: 210 40% 98%;
-  --card: 222 47% 11%;
-  --card-foreground: 210 40% 98%;
-  --primary: 198 85% 48%;
+  --background: 178 64% 7%;
+  --foreground: 43 45% 96%;
+  --card: 178 52% 10%;
+  --card-foreground: 43 45% 96%;
+  --primary: 178 72% 32%;
   --primary-foreground: 0 0% 100%;
-  --secondary: 168 58% 42%;
+  --secondary: 43 62% 48%;
   --secondary-foreground: 0 0% 100%;
-  --muted: 217 33% 17%;
-  --muted-foreground: 215 20% 65%;
-  --accent: 43 96% 56%;
-  --accent-foreground: 222 47% 11%;
+  --muted: 178 40% 15%;
+  --muted-foreground: 43 18% 72%;
+  --accent: 45 83% 54%;
+  --accent-foreground: 178 64% 10%;
   --destructive: 0 74% 52%;
   --destructive-foreground: 0 0% 100%;
-  --border: 217 33% 20%;
-  --input: 217 33% 20%;
-  --ring: 198 85% 48%;
+  --border: 178 36% 20%;
+  --input: 178 36% 20%;
+  --ring: 178 72% 32%;
 }
 
 * {
@@ -173,8 +173,8 @@ body {
 }
 
 .title-solid-color {
-  color: #e0f2fe;
-  text-shadow: 0 10px 35px rgba(14, 165, 233, 0.28);
+  color: #f8e6a0;
+  text-shadow: 0 10px 35px rgba(178, 137, 40, 0.36);
 }
 
 .title-sheen {
@@ -194,7 +194,7 @@ body {
 
 .gold-radial {
   background:
-    radial-gradient(circle at 30% 20%, rgba(245, 158, 11, 0.45), transparent 28%),
-    radial-gradient(circle at 80% 10%, rgba(14, 165, 233, 0.25), transparent 26%),
-    linear-gradient(135deg, rgba(2, 6, 23, 0.98), rgba(12, 74, 110, 0.9));
+    radial-gradient(circle at 28% 18%, rgba(218, 178, 72, 0.45), transparent 28%),
+    radial-gradient(circle at 78% 12%, rgba(0, 104, 101, 0.32), transparent 26%),
+    linear-gradient(135deg, rgba(1, 46, 45, 0.98), rgba(0, 92, 88, 0.92));
 }

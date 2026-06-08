@@ -4,7 +4,7 @@ import { Card, CardContent } from "@/components/ui/card";
 const contactItems = [
   {
     label: "WhatsApp",
-    value: "Chat with us",
+    value: "+91 73861 81914",
     href: "",
     icon: MessageCircle,
     accent: "text-emerald-600 bg-emerald-50"
@@ -14,7 +14,7 @@ const contactItems = [
     value: "+91 73861 81914 / +91 70950 81914",
     href: "tel:+917386181914",
     icon: Phone,
-    accent: "text-sky-600 bg-sky-50"
+    accent: "text-teal-700 bg-teal-50"
   },
   {
     label: "Email",

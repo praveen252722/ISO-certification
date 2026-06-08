@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 
-const WHATSAPP_NUMBER = "918341864446";
+const WHATSAPP_NUMBER = "917386181914";
 
 interface InquiryFormValues {
   name: string;

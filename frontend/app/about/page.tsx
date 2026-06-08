@@ -14,7 +14,7 @@ export default function AboutPage() {
             <Badge variant="outline">About us</Badge>
             <h1 className="mt-4 max-w-4xl text-4xl font-extrabold tracking-normal">VJ International Certifications, Hyderabad</h1>
             <p className="mt-6 leading-8 text-muted-foreground">
-              VJ International Certifications provides ISO certification support with the promise of Global Excellence, Trust, and Assurance. The company helps organizations prepare documentation, coordinate audit readiness, manage certification applications, and maintain clear verification records.
+              VJ International Certifications provides ISO certification support with Brief-UKASL Accreditation. The company helps organizations prepare documentation, coordinate audit readiness, manage certification applications, and maintain clear verification records.
             </p>
             <p className="mt-4 leading-8 text-muted-foreground">
               Led by Proprietor T. Gabriel, the team works with clients across quality, safety, environmental, food safety, and information security standards. The office is located at 2-122/181/1, Sriram Nagar, Shamshiguda, Kukatpally, Hyderabad 500072.

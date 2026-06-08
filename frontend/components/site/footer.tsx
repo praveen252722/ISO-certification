@@ -1,21 +1,21 @@
 import Link from "next/link";
-import { Facebook, Linkedin, Mail, MapPin, Phone, ShieldCheck, Twitter } from "lucide-react";
+import { Facebook, Linkedin, Mail, MapPin, Phone, Twitter } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { navItems } from "@/lib/demo-data";
 
 export function SiteFooter() {
   return (
-    <footer className="bg-slate-950 text-slate-100">
+    <footer className="bg-[#012f2e] text-slate-100">
       <div className="container grid gap-10 py-12 lg:grid-cols-[1.4fr_1fr_1fr_1.2fr]">
         <div>
           <div className="mb-4 flex items-center gap-3">
-            <div className="flex h-11 w-11 items-center justify-center rounded-full bg-sky-600">
-              <ShieldCheck />
+            <div className="flex h-12 w-12 items-center justify-center overflow-hidden rounded-full border border-[#f6d46f] bg-white">
+              <img src="/images/brand/vj-international-logo.jpeg" alt="VJ International Certifications logo" className="h-full w-full object-cover" />
             </div>
             <div>
               <p className="font-extrabold uppercase">VJ International Certifications</p>
-              <p className="text-sm text-slate-300">Global Excellence | Trust | Assurance</p>
+              <p className="text-sm text-[#fff3c4]">Global Excellence | Trust | Assurance</p>
             </div>
           </div>
           <p className="max-w-sm text-sm leading-6 text-slate-300">

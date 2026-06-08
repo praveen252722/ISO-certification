@@ -29,12 +29,17 @@ export const counters = [
 ];
 
 export const certificationTypes = [
-  "ISO 9001 Quality Management",
-  "ISO 14001 Environmental Management",
-  "ISO 45001 Occupational Health & Safety",
-  "ISO 27001 Information Security",
-  "ISO 22000 Food Safety Management",
-  "ISO 13485 Medical Devices"
+  "ISO 9001:2015 Quality Management System",
+  "ISO 14001:2015 Environment Management System",
+  "ISO 13485:2016 Medical Devices",
+  "ISO 20000:2011 IT Service Management",
+  "ISO 22000:2018 Food Safety Management",
+  "ISO 50001:2018 Energy Management",
+  "ISO 27001:2013 Information Security",
+  "ISO 45001:2018 Occupational Health & Safety",
+  "ISO 37001:2016 Anti-Bribery Management",
+  "GHP Good Hygiene Practices",
+  "AS 9100(D) Aerospace Certification"
 ];
 
 export const processSteps = [

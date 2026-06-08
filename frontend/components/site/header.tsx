@@ -2,22 +2,22 @@
 
 import Link from "next/link";
 import { useState } from "react";
-import { Award, Menu, X } from "lucide-react";
+import { Menu, X } from "lucide-react";
 import { navItems } from "@/lib/demo-data";
 
 export function SiteHeader() {
   const [open, setOpen] = useState(false);
 
   return (
-    <header className="sticky top-0 z-50 border-b border-white/15 bg-gradient-to-r from-sky-900 via-sky-700 to-cyan-600 text-white shadow-lg">
+    <header className="sticky top-0 z-50 border-b border-white/15 bg-gradient-to-r from-[#012f2e] via-[#006763] to-[#b38a2f] text-white shadow-lg">
       <div className="flex min-h-20 items-center justify-between px-4 lg:px-6">
         <Link href="/" className="flex min-w-0 items-center gap-3">
-          <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full border-2 border-amber-300 bg-slate-950 text-amber-300 shadow-md">
-            <Award className="h-7 w-7" />
+          <div className="flex h-14 w-14 shrink-0 items-center justify-center overflow-hidden rounded-full border-2 border-[#f6d46f] bg-white shadow-md">
+            <img src="/images/brand/vj-international-logo.jpeg" alt="VJ International Certifications logo" className="h-full w-full object-cover" />
           </div>
           <div className="min-w-0">
             <p className="truncate text-xl font-extrabold uppercase tracking-normal md:text-2xl">VJ International Certifications</p>
-            <p className="truncate text-sm font-medium text-sky-50 md:text-base">Global Excellence | Trust | Assurance</p>
+            <p className="truncate text-sm font-medium text-[#fff3c4] md:text-base">Global Excellence | Trust | Assurance</p>
           </div>
         </Link>
 
