@@ -1,7 +1,12 @@
-const API_URL = process.env.NEXT_PUBLIC_API_URL;
+const API_URL = (() => {
+  const raw = process.env.NEXT_PUBLIC_API_URL;
+  if (!raw) return "";
+  if (raw.endsWith("/api/v1")) return raw;
+  return `${raw.replace(/\/+$/, "")}/api/v1`;
+})();
 
 export async function adminApi<T>(path: string, options: RequestInit = {}): Promise<T> {
-  if (!API_URL) throw new Error("NEXT_PUBLIC_API_URL environment variable is not configured");
+  if (!API_URL) throw new Error("NEXT_PUBLIC_API_URL is not configured");
 
   const token = typeof window !== "undefined" ? localStorage.getItem("admin_token") : null;
   const headers = new Headers(options.headers);
