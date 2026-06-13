@@ -6,8 +6,6 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 
-const WHATSAPP_NUMBER = "917386181914";
-
 interface InquiryFormValues {
   name: string;
   company: string;
@@ -26,8 +24,9 @@ const initialValues: InquiryFormValues = {
   message: ""
 };
 
-export function InquiryForm({ buttonLabel = "Submit enquiry on WhatsApp" }: { buttonLabel?: string }) {
+export function InquiryForm({ buttonLabel = "Submit enquiry" }: { buttonLabel?: string }) {
   const [formData, setFormData] = useState<InquiryFormValues>(initialValues);
+  const [submitted, setSubmitted] = useState(false);
 
   function updateField(field: keyof InquiryFormValues, value: string) {
     setFormData((current) => ({ ...current, [field]: value }));
@@ -35,22 +34,8 @@ export function InquiryForm({ buttonLabel = "Submit enquiry on WhatsApp" }: { bu
 
   function handleSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
-
-    const whatsappMessage = `New ISO Certification Inquiry
-
-Name: ${formData.name}
-Company: ${formData.company}
-Email: ${formData.email}
-Phone: ${formData.phone}
-ISO Type: ${formData.isoType}
-
-Message:
-${formData.message}`;
-
-    const encodedMessage = encodeURIComponent(whatsappMessage);
-    const whatsappUrl = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodedMessage}`;
-
-    window.open(whatsappUrl, "_blank", "noopener,noreferrer");
+    setSubmitted(true);
+    setFormData(initialValues);
   }
 
   return (
@@ -104,6 +89,7 @@ ${formData.message}`;
       <Button type="submit" className="h-11 w-full">
         <MessageSquareText className="h-4 w-4" /> {buttonLabel}
       </Button>
+      {submitted ? <p className="rounded-md bg-emerald-50 p-3 text-sm font-semibold text-emerald-700">Inquiry received locally for Phase 1.</p> : null}
     </form>
   );
 }

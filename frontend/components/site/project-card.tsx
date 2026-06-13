@@ -48,7 +48,7 @@ export function ProjectCard({ title, image, description, date, index }: ProjectC
       <CardContent>
         <p className="text-sm leading-6 text-muted-foreground">{description}</p>
         <Button asChild className="mt-5 w-full">
-          <a href="https://wa.me/917386181914" target="_blank" rel="noreferrer">Enquire on WhatsApp</a>
+          <a href="/contact">Send inquiry</a>
         </Button>
       </CardContent>
     </Card>

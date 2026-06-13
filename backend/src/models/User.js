@@ -8,7 +8,7 @@ const userSchema = new mongoose.Schema(
     email: { type: String, required: true, unique: true, lowercase: true, trim: true, index: true },
     password: { type: String, required: true, minlength: 5, select: false },
     phone: { type: String, trim: true },
-    role: { type: String, enum: ["AUDITOR", "CLIENT"], default: "CLIENT", index: true },
+    role: { type: String, enum: ["ADMIN", "AUDITOR", "CLIENT", "STAFF"], default: "CLIENT", index: true },
     company: { type: mongoose.Schema.Types.ObjectId, ref: "Company" },
     isActive: { type: Boolean, default: true },
     resetPasswordToken: String,

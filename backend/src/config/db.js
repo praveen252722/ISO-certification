@@ -1,8 +1,8 @@
-import mongoose from "mongoose";
 import { env } from "./env.js";
+import { connectMongoDB, sanitizeMongoUri } from "../lib/mongodb.js";
 
 export async function connectDatabase() {
-  mongoose.set("strictQuery", true);
-  await mongoose.connect(env.mongoUri);
+  console.log(`Connecting to MongoDB: ${sanitizeMongoUri(env.mongoUri)}`);
+  await connectMongoDB(env.mongoUri);
   console.log("MongoDB connected");
 }

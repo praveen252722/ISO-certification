@@ -91,7 +91,7 @@ export default function ServicesPage() {
             <div key={group.title}>
               <div className="mb-5 flex flex-col justify-between gap-3 md:flex-row md:items-center">
                 <h2 className="text-2xl font-extrabold tracking-normal">{group.title} <span className="text-muted-foreground">({group.services.length} Services)</span></h2>
-                <Button asChild variant="ghost"><a href="https://wa.me/917386181914" target="_blank" rel="noreferrer">View All</a></Button>
+                <Button asChild variant="ghost"><a href="/contact">View All</a></Button>
               </div>
               <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
                 {group.services.map((service) => (
@@ -116,7 +116,7 @@ export default function ServicesPage() {
                         ))}
                       </div>
                       <Button asChild className="mt-5 w-full">
-                        <a href={`https://wa.me/917386181914?text=${encodeURIComponent(`Hello, I want details about ${service.title}.`)}`} target="_blank" rel="noreferrer">
+                        <a href="/contact">
                           Get the certificate
                         </a>
                       </Button>

@@ -15,7 +15,7 @@ export default function ApplyPage() {
             <Input placeholder="Company name" />
             <Input placeholder="Contact person" />
             <Input placeholder="Email" />
-            <Input placeholder="WhatsApp number" />
+            <Input placeholder="Phone number" />
             <Input placeholder="Certification type" />
             <Input placeholder="Number of sites" />
             <Textarea className="md:col-span-2" placeholder="Business scope and certification requirement" />

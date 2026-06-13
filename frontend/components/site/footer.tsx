@@ -1,8 +1,15 @@
 import Link from "next/link";
-import { Facebook, Linkedin, Mail, MapPin, Phone, Twitter } from "lucide-react";
+import { Facebook, Instagram, Linkedin, Mail, MapPin, Phone, Twitter } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { navItems } from "@/lib/demo-data";
+
+const socialLinks = [
+  { icon: Linkedin, href: "https://www.linkedin.com/company/vjinternationalcertifications", label: "LinkedIn" },
+  { icon: Facebook, href: "https://www.facebook.com/vjinternationalcertifications", label: "Facebook" },
+  { icon: Twitter, href: "https://twitter.com/vjcertifications", label: "Twitter" },
+  { icon: Instagram, href: "https://www.instagram.com/vjinternationalcertifications", label: "Instagram" },
+];
 
 export function SiteFooter() {
   return (
@@ -22,9 +29,11 @@ export function SiteFooter() {
             Professional ISO certification support, documentation guidance, audit coordination, and certificate verification.
           </p>
           <div className="mt-5 flex gap-2">
-            {[Facebook, Twitter, Linkedin].map((Icon, index) => (
-              <Button key={index} size="icon" variant="outline" className="border-slate-700 bg-transparent text-white hover:bg-slate-800">
-                <Icon className="h-4 w-4" />
+            {socialLinks.map(({ icon: Icon, href, label }) => (
+              <Button key={label} size="icon" variant="outline" className="border-slate-700 bg-transparent text-white hover:bg-slate-800" asChild>
+                <a href={href} target="_blank" rel="noopener noreferrer" aria-label={label}>
+                  <Icon className="h-4 w-4" />
+                </a>
               </Button>
             ))}
           </div>
@@ -42,11 +51,11 @@ export function SiteFooter() {
         </div>
 
         <div>
-          <h3 className="mb-4 font-semibold">Company Details</h3>
+          <h3 className="mb-4 font-semibold">Contact Details</h3>
           <div className="grid gap-3 text-sm text-slate-300">
-            <span className="flex gap-2"><MapPin className="h-4 w-4" /> 2-122/181/1, Sriram Nagar, Shamshiguda, Kukatpally, Hyderabad 500072</span>
-            <span className="flex gap-2"><Phone className="h-4 w-4" /> +91 73861 81914, +91 70950 81914</span>
-            <span className="flex gap-2"><Mail className="h-4 w-4" /> vjinternationalcertifications@example.com</span>
+            <span className="flex gap-2"><MapPin className="h-4 w-4 shrink-0 mt-0.5" /> 2-122/181/1, Sriram Nagar, Shamshiguda, Kukatpally, Hyderabad 500072</span>
+            <span className="flex gap-2"><Phone className="h-4 w-4 shrink-0 mt-0.5" /> +91 73861 81914</span>
+            <span className="flex gap-2"><Mail className="h-4 w-4 shrink-0 mt-0.5" /> info@vjinternationalcertification.com</span>
           </div>
         </div>
 
@@ -60,7 +69,7 @@ export function SiteFooter() {
         </div>
       </div>
       <div className="border-t border-slate-800 py-4 text-center text-sm text-slate-400">
-        © 2026 VJ International Certifications. All rights reserved.
+        &copy; 2026 VJ International Certifications. All rights reserved.
       </div>
     </footer>
   );

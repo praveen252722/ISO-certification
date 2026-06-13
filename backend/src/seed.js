@@ -22,6 +22,7 @@ await Promise.all([
 ]);
 
 const auditor = await User.create({ name: "Lead Auditor", email: "auditor@iso.example", password: "Password123!", role: "AUDITOR", phone: "+919876543212" });
+const admin = await User.create({ name: "VJ Admin", username: "admin", email: "admin@vjcertifications.example", password: "VJ@123", role: "ADMIN", phone: "+917386181914" });
 const client = await User.create({ name: "Priya Nair", email: "client@iso.example", password: "Password123!", role: "CLIENT", phone: "+919876543213" });
 
 const company = await Company.create({
@@ -50,14 +51,20 @@ const application = await Application.create({
 });
 
 await Certificate.create({
+  clientName: client.name,
+  companyName: company.name,
+  certificateId: "ISO-2026-9001-1842",
   certificateNumber: "ISO-2026-9001-1842",
+  certificateType: "ISO 9001",
+  certificationScope: "Quality management system for precision manufacturing",
   application: application._id,
   company: company._id,
   client: client._id,
   certificationType: "ISO 9001",
   issueDate: new Date("2026-02-14"),
   expiryDate: new Date("2029-02-13"),
-  issuedBy: auditor._id
+  address: "Hyderabad, Telangana, India",
+  issuedBy: admin._id
 });
 
 await Audit.create({
@@ -88,6 +95,7 @@ await Testimonial.create({
 });
 
 console.log("Seed complete");
-console.log("Accounts: auditor@iso.example, client@iso.example");
-console.log("Password: Password123!");
+console.log("Accounts: admin@vjcertifications.example, auditor@iso.example, client@iso.example");
+console.log("Admin password: VJ@123");
+console.log("Auditor/client password: Password123!");
 process.exit(0);

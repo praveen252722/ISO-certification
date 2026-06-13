@@ -1,14 +1,7 @@
-import { Instagram, Mail, MapPin, MessageCircle, Phone } from "lucide-react";
+import { Instagram, Mail, MapPin, Phone } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 
 const contactItems = [
-  {
-    label: "WhatsApp",
-    value: "+91 73861 81914",
-    href: "",
-    icon: MessageCircle,
-    accent: "text-emerald-600 bg-emerald-50"
-  },
   {
     label: "Phone",
     value: "+91 73861 81914 / +91 70950 81914",

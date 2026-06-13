@@ -3,7 +3,7 @@ import { ArrowRight, CheckCircle2, FileSearch, MapPin, Phone } from "lucide-reac
 import { ContactPanel } from "@/components/site/contact-panel";
 import { GoogleMapsShowcase } from "@/components/site/google-maps-showcase";
 import { InquiryForm } from "@/components/site/inquiry-form";
-import { ProjectCard } from "@/components/site/project-card";
+import { LatestCertifiedOrganizations } from "@/components/site/latest-certified-organizations";
 import { PublicLayout } from "@/components/site/public-layout";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -15,70 +15,7 @@ const faqs = [
   "How long does ISO certification take?",
   "Can we track audit status online?",
   "Does the certificate include QR verification?",
-  "Can renewal reminders be automated on WhatsApp?"
-];
-
-const certifiedProjects = [
-  {
-    title: "Police Department Certification Support",
-    image: "/images/projects/certified-organization-1.png",
-    date: "June 8, 2026",
-    description: "Certification support and coordination completed with public safety department teams."
-  },
-  {
-    title: "School Compliance Program",
-    image: "/images/projects/certified-organization-2.png",
-    date: "June 8, 2026",
-    description: "Documentation and certification guidance delivered for education institution compliance."
-  },
-  {
-    title: "Fire Safety Certification Assistance",
-    image: "/images/projects/certified-organization-3.png",
-    date: "June 8, 2026",
-    description: "Fire safety and process compliance certification support with verified documentation."
-  },
-  {
-    title: "Police Office Certification Handover",
-    image: "/images/projects/certified-organization-4.png",
-    date: "June 8, 2026",
-    description: "Certificate handover and compliance recognition with department leadership."
-  },
-  {
-    title: "Apex Elevators Certification",
-    image: "/images/projects/certified-organization-5.png",
-    date: "June 8, 2026",
-    description: "Certification consultation and quality documentation support for elevator services."
-  },
-  {
-    title: "Fire Department Readiness Program",
-    image: "/images/projects/certified-organization-6.png",
-    date: "June 8, 2026",
-    description: "Audit readiness and compliance documentation support for emergency service operations."
-  },
-  {
-    title: "Sri Sairam High School Certification",
-    image: "/images/projects/certified-organization-7.png",
-    date: "June 8, 2026",
-    description: "Institution certification program with student awareness and management documentation."
-  },
-  {
-    title: "Business Certification Handover",
-    image: "/images/projects/certified-organization-8.png",
-    date: "June 8, 2026",
-    description: "Client certificate handover for business compliance and quality management readiness."
-  },
-  {
-    title: "Cyberabad Police School Program",
-    image: "/images/projects/certified-organization-9.png",
-    date: "June 8, 2026",
-    description: "ISO guidance and certification support for police training and education activity."
-  },
-  {
-    title: "Institution Recognition Program",
-    image: "/images/projects/certified-organization-10.png",
-    date: "June 8, 2026",
-    description: "Certificate and award handover with institutional leadership and compliance records."
-  }
+  "Can renewal reminders be tracked?"
 ];
 
 export default function HomePage() {
@@ -140,22 +77,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      <section className="bg-slate-100 py-16 dark:bg-slate-900">
-        <div className="container">
-          <div className="mb-8 flex flex-col justify-between gap-4 md:flex-row md:items-end">
-            <div>
-              <Badge variant="outline">Projects showcase</Badge>
-              <h2 className="mt-3 text-3xl font-extrabold tracking-normal">Latest certified organizations</h2>
-            </div>
-            <Button asChild variant="ghost"><Link href="/projects">View all projects</Link></Button>
-          </div>
-          <div className="grid gap-8 md:grid-cols-2 xl:grid-cols-3">
-            {certifiedProjects.map((item, index) => (
-              <ProjectCard key={item.title} {...item} index={index} />
-            ))}
-          </div>
-        </div>
-      </section>
+      <LatestCertifiedOrganizations />
 
       <section className="bg-white py-16 dark:bg-slate-950">
         <div className="container">
@@ -247,10 +169,10 @@ export default function HomePage() {
             <Card className="mt-6 overflow-hidden shadow-soft">
               <CardHeader className="border-b bg-muted/40 px-6 py-5">
                 <CardTitle className="text-xl leading-tight">Inquiry Form</CardTitle>
-                <p className="text-sm text-muted-foreground">Share your requirement and we will open WhatsApp with the filled details.</p>
+                <p className="text-sm text-muted-foreground">Share your requirement and our team will review it.</p>
               </CardHeader>
               <CardContent className="p-7">
-                <InquiryForm buttonLabel="Send enquiry on WhatsApp" />
+                <InquiryForm buttonLabel="Send enquiry" />
               </CardContent>
             </Card>
           </div>

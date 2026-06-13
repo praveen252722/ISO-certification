@@ -14,7 +14,7 @@ export default function RegisterPage() {
             <Input placeholder="Full name" />
             <Input placeholder="Company name" />
             <Input type="email" placeholder="Email address" />
-            <Input placeholder="WhatsApp number" />
+            <Input placeholder="Phone number" />
             <Input type="password" placeholder="Password" />
             <Input type="password" placeholder="Confirm password" />
             <Button asChild className="md:col-span-2"><Link href="/dashboard/client">Register</Link></Button>
