@@ -3,6 +3,8 @@ import { connectDatabase } from "./config/db.js";
 import { env } from "./config/env.js";
 import { User } from "./models/User.js";
 
+let mongoReady = false;
+
 async function ensureDefaultAdmin() {
   const username = process.env.DEFAULT_ADMIN_USERNAME ?? "admin";
   const password = process.env.DEFAULT_ADMIN_PASSWORD;
@@ -38,14 +40,20 @@ async function ensureDefaultAdmin() {
   console.log(`Default admin created. Username: ${username}`);
 }
 
-connectDatabase()
-  .then(async () => {
-    await ensureDefaultAdmin();
-    app.listen(env.port, () => console.log(`API listening on port ${env.port}`));
-  })
-  .catch((error) => {
-    console.error("Failed to start server");
-    console.error(error.message);
-    if (error.code) console.error(`MongoDB error code: ${error.code}`);
-    process.exit(1);
-  });
+app.listen(env.port, () => {
+  console.log(`API listening on port ${env.port}`);
+
+  connectDatabase()
+    .then(async () => {
+      mongoReady = true;
+      try {
+        await ensureDefaultAdmin();
+      } catch (err) {
+        console.error("Failed to seed default admin:", err.message);
+      }
+    })
+    .catch((error) => {
+      console.error("MongoDB connection failed:", error.message);
+      if (error.code) console.error(`MongoDB error code: ${error.code}`);
+    });
+});
