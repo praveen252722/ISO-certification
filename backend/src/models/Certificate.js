@@ -20,7 +20,6 @@ const certificateSchema = new mongoose.Schema(
     certificatePdf: { type: String, trim: true },
     companyLogo: { type: String, trim: true },
     qrCodeUrl: String,
-    pdfUrl: String,
     application: { type: mongoose.Schema.Types.ObjectId, ref: "Application" },
     company: { type: mongoose.Schema.Types.ObjectId, ref: "Company", index: true },
     client: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
@@ -34,8 +33,6 @@ certificateSchema.index({ clientName: "text", companyName: "text", certificateId
 certificateSchema.pre("validate", function normalizeCertificateFields(next) {
   if (!this.certificateType && this.certificationType) this.certificateType = this.certificationType;
   if (!this.certificationType && this.certificateType) this.certificationType = this.certificateType;
-  if (!this.pdfUrl && this.certificatePdf) this.pdfUrl = this.certificatePdf;
-  if (!this.certificatePdf && this.pdfUrl) this.certificatePdf = this.pdfUrl;
   return next();
 });
 

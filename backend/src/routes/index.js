@@ -3,6 +3,7 @@ import { analyticsRoutes } from "./analytics.routes.js";
 import { authRoutes } from "./auth.routes.js";
 import { certificateRoutes } from "./certificate.routes.js";
 import { exportRoutes } from "./export.routes.js";
+import { organizationRoutes } from "./organization.routes.js";
 import { projectRoutes } from "./project.routes.js";
 import { userRoutes } from "./users.routes.js";
 import { connectMongoDB } from "../lib/mongodb.js";
@@ -22,6 +23,7 @@ router.get("/test-db", async (_req, res, next) => {
 router.use("/auth", authRoutes);
 router.use("/users", userRoutes);
 router.use("/certificates", certificateRoutes);
+router.use("/organizations", organizationRoutes);
 router.use("/projects", projectRoutes);
 router.use("/analytics", analyticsRoutes);
 router.use("/export", exportRoutes);

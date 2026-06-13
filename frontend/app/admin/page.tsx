@@ -1,7 +1,7 @@
 "use client";
 
 import { ChangeEvent, FormEvent, useEffect, useMemo, useState } from "react";
-import { BarChart3, Download, FileCheck2, LayoutDashboard, Loader2, LogOut, Plus, RefreshCw, Search, ShieldCheck, Users } from "lucide-react";
+import { BarChart3, Building2, Download, FileCheck2, ImageIcon, LayoutDashboard, Loader2, LogOut, Plus, RefreshCw, Search, ShieldCheck, Users } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -10,7 +10,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { API_URL, apiClient } from "@/services/api";
 import { formatCurrency, formatDate } from "@/lib/utils";
 
-type Tab = "dashboard" | "users" | "certificates" | "exports";
+type Tab = "dashboard" | "users" | "certificates" | "organizations";
 
 interface AdminUser {
   id?: string;
@@ -42,6 +42,15 @@ interface CertificateRecord {
   certificatePdf?: string;
 }
 
+interface OrganizationRecord {
+  _id?: string;
+  title: string;
+  description?: string;
+  imageUrl?: string;
+  certificationDate?: string;
+  status: string;
+}
+
 interface OverviewMetrics {
   totalCertifications: number;
   activeCertificates: number;
@@ -66,6 +75,14 @@ const emptyCertificate = {
   certificatePdf: ""
 };
 
+const emptyOrganization = {
+  title: "",
+  description: "",
+  imageUrl: "",
+  certificationDate: "",
+  status: "Certified"
+};
+
 export default function AdminPage() {
   const [token, setToken] = useState("");
   const [admin, setAdmin] = useState<AdminUser | null>(null);
@@ -83,6 +100,9 @@ export default function AdminPage() {
   const [userForm, setUserForm] = useState({ name: "", username: "", email: "", password: "", phone: "", role: "STAFF", securityPin: "" });
   const [editingUserId, setEditingUserId] = useState("");
   const [search, setSearch] = useState("");
+  const [organizations, setOrganizations] = useState<OrganizationRecord[]>([]);
+  const [organizationForm, setOrganizationForm] = useState(emptyOrganization);
+  const [editingOrganizationId, setEditingOrganizationId] = useState("");
 
   const apiBase = useMemo(() => API_URL.replace(/\/api\/v1$/, ""), []);
 
@@ -134,15 +154,17 @@ export default function AdminPage() {
     setLoading(true);
     setError("");
     try {
-      const [overview, userData, certificateData, revenueData] = await Promise.all([
+      const [overview, userData, certificateData, organizationData, revenueData] = await Promise.all([
         request<{ metrics: OverviewMetrics }>("/analytics/overview"),
         request<{ items: AdminUser[] }>("/users?limit=50"),
         request<{ items: CertificateRecord[] }>("/certificates?limit=50"),
+        request<{ items: OrganizationRecord[] }>("/organizations/admin?limit=50"),
         Promise.resolve({ monthly: [], recent: [] })
       ]);
       setMetrics(overview.metrics);
       setUsers(userData.items ?? []);
       setCertificates(certificateData.items ?? []);
+      setOrganizations(organizationData.items ?? []);
       setRevenue(revenueData);
     } catch (loadError) {
       setError(loadError instanceof Error ? loadError.message : "Unable to load admin data");
@@ -319,6 +341,87 @@ export default function AdminPage() {
       .catch((exportError) => setError(exportError instanceof Error ? exportError.message : "Export failed"));
   }
 
+  async function uploadOrganizationImage(file?: File) {
+    if (!file) return "";
+    const formData = new FormData();
+    formData.append("organizationImage", file);
+
+    const response = await fetch(`${API_URL}/organizations/upload-image`, {
+      method: "POST",
+      headers: { Authorization: `Bearer ${token}` },
+      body: formData
+    });
+
+    const data = await response.json();
+    if (!response.ok) throw new Error(data.message ?? "Image upload failed");
+    const url = data.file.url as string;
+    return url.startsWith("/uploads/") ? `${apiBase}${url}` : url;
+  }
+
+  async function handleOrganizationImageChange(event: ChangeEvent<HTMLInputElement>) {
+    const file = event.target.files?.[0];
+    if (!file) return;
+    setLoading(true);
+    setError("");
+    try {
+      const url = await uploadOrganizationImage(file);
+      setOrganizationForm((current) => ({ ...current, imageUrl: url }));
+      setNotice("Organization image uploaded.");
+    } catch (uploadError) {
+      setError(uploadError instanceof Error ? uploadError.message : "Image upload failed");
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  async function saveOrganization(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    setLoading(true);
+    setError("");
+    try {
+      const payload = { ...organizationForm };
+      if (editingOrganizationId) {
+        await request(`/organizations/${editingOrganizationId}`, { method: "PUT", body: JSON.stringify(payload) });
+      } else {
+        await request("/organizations", { method: "POST", body: JSON.stringify(payload) });
+      }
+      setOrganizationForm(emptyOrganization);
+      setEditingOrganizationId("");
+      setNotice(editingOrganizationId ? "Organization updated." : "Organization created.");
+      await loadAdminData();
+    } catch (saveError) {
+      setError(saveError instanceof Error ? saveError.message : "Organization save failed");
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  function editOrganization(org: OrganizationRecord) {
+    setEditingOrganizationId(org._id ?? "");
+    setOrganizationForm({
+      title: org.title ?? "",
+      description: org.description ?? "",
+      imageUrl: org.imageUrl ?? "",
+      certificationDate: org.certificationDate?.slice(0, 10) ?? "",
+      status: org.status ?? "Certified"
+    });
+    setTab("organizations");
+  }
+
+  async function removeOrganization(id: string) {
+    if (!confirm("Delete this organization?")) return;
+    setLoading(true);
+    try {
+      await request(`/organizations/${id}`, { method: "DELETE" });
+      setNotice("Organization deleted.");
+      await loadAdminData();
+    } catch (deleteError) {
+      setError(deleteError instanceof Error ? deleteError.message : "Delete failed");
+    } finally {
+      setLoading(false);
+    }
+  }
+
   const visibleCertificates = certificates.filter((item) => {
     const text = `${item.clientName} ${item.companyName} ${item.certificateId} ${item.certificateNumber}`.toLowerCase();
     return text.includes(search.toLowerCase());
@@ -365,7 +468,7 @@ export default function AdminPage() {
             ["dashboard", LayoutDashboard, "Dashboard"],
             ["users", Users, "Users"],
             ["certificates", FileCheck2, "Certificates"],
-            ["exports", Download, "Exports"]
+            ["organizations", Building2, "Organizations"]
           ].map(([key, Icon, label]) => (
             <Button key={String(key)} variant={tab === key ? "default" : "outline"} onClick={() => setTab(key as Tab)}>
               <Icon className="h-4 w-4" /> {String(label)}
@@ -393,9 +496,23 @@ export default function AdminPage() {
             editingCertificateId={editingCertificateId}
             setEditingCertificateId={setEditingCertificateId}
             apiBase={apiBase}
+            onExport={downloadExport}
           />
         ) : null}
-        {tab === "exports" ? <ExportPanel downloadExport={downloadExport} /> : null}
+        {tab === "organizations" ? (
+          <OrganizationsPanel
+            form={organizationForm}
+            setForm={setOrganizationForm}
+            onSubmit={saveOrganization}
+            onImageChange={handleOrganizationImageChange}
+            organizations={organizations}
+            removeOrganization={removeOrganization}
+            editOrganization={editOrganization}
+            editingOrganizationId={editingOrganizationId}
+            setEditingOrganizationId={setEditingOrganizationId}
+            apiBase={apiBase}
+          />
+        ) : null}
       </section>
     </main>
   );
@@ -486,7 +603,7 @@ function UsersPanel({ users, userForm, setUserForm, createUser, editingUserId, s
   );
 }
 
-function CertificatesPanel({ form, setForm, onSubmit, onPdfChange, certificates, search, setSearch, removeCertificate, editCertificate, editingCertificateId, setEditingCertificateId, apiBase }: {
+function CertificatesPanel({ form, setForm, onSubmit, onPdfChange, certificates, search, setSearch, removeCertificate, editCertificate, editingCertificateId, setEditingCertificateId, apiBase, onExport }: {
   form: typeof emptyCertificate;
   setForm: (value: typeof emptyCertificate) => void;
   onSubmit: (event: FormEvent<HTMLFormElement>) => void;
@@ -499,6 +616,7 @@ function CertificatesPanel({ form, setForm, onSubmit, onPdfChange, certificates,
   editingCertificateId: string;
   setEditingCertificateId: (value: string) => void;
   apiBase: string;
+  onExport?: (kind: "csv" | "xls") => void;
 }) {
   return (
     <div className="grid gap-5 xl:grid-cols-[460px_1fr]">
@@ -520,7 +638,6 @@ function CertificatesPanel({ form, setForm, onSubmit, onPdfChange, certificates,
             <Input placeholder="Email" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} />
             <Input placeholder="Phone" value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} />
             <Input type="file" accept="application/pdf" onChange={onPdfChange} />
-            <Input placeholder="Certificate PDF URL" value={form.certificatePdf} onChange={(e) => setForm({ ...form, certificatePdf: e.target.value })} />
             <div className="flex gap-2">
               <Button type="submit"><Plus className="h-4 w-4" /> {editingCertificateId ? "Update Certificate" : "Save Certificate"}</Button>
               {editingCertificateId ? <Button type="button" variant="outline" onClick={() => setEditingCertificateId("")}>Cancel</Button> : null}
@@ -528,7 +645,7 @@ function CertificatesPanel({ form, setForm, onSubmit, onPdfChange, certificates,
           </form>
         </CardContent>
       </Card>
-      <TableCard title="Certificate Management" action={<div className="relative w-full max-w-sm"><Search className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" /><Input className="pl-9" placeholder="Search certificates" value={search} onChange={(e) => setSearch(e.target.value)} /></div>}>
+      <TableCard title="Certificate Management" action={<div className="flex flex-wrap items-center gap-2"><div className="relative w-full max-w-sm"><Search className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" /><Input className="pl-9" placeholder="Search certificates" value={search} onChange={(e) => setSearch(e.target.value)} /></div>{onExport ? <><Button size="sm" variant="outline" onClick={() => onExport("csv")}><Download className="h-4 w-4" /> CSV</Button><Button size="sm" variant="outline" onClick={() => onExport("xls")}><Download className="h-4 w-4" /> XLS</Button></> : null}</div>}>
         {certificates.map((certificate) => {
           const id = certificate.certificateId || certificate._id || certificate.id || certificate.certificateNumber;
           const pdf = certificate.certificatePdf?.startsWith("/uploads/") ? `${apiBase}${certificate.certificatePdf}` : certificate.certificatePdf;
@@ -578,19 +695,60 @@ function RevenuePanel({ revenue }: { revenue: { monthly: Array<{ month: string; 
   );
 }
 
-function ExportPanel({ downloadExport }: { downloadExport: (kind: "csv" | "xls") => void }) {
+function OrganizationsPanel({ form, setForm, onSubmit, onImageChange, organizations, removeOrganization, editOrganization, editingOrganizationId, setEditingOrganizationId, apiBase }: {
+  form: typeof emptyOrganization;
+  setForm: (value: typeof emptyOrganization) => void;
+  onSubmit: (event: FormEvent<HTMLFormElement>) => void;
+  onImageChange: (event: ChangeEvent<HTMLInputElement>) => void;
+  organizations: OrganizationRecord[];
+  removeOrganization: (id: string) => void;
+  editOrganization: (org: OrganizationRecord) => void;
+  editingOrganizationId: string;
+  setEditingOrganizationId: (value: string) => void;
+  apiBase: string;
+}) {
   return (
-    <div className="grid gap-4 md:grid-cols-2">
-      {(["csv", "xls"] as const).map((kind) => (
-        <Card key={kind}>
-          <CardContent className="grid gap-4 p-6">
-            <Download className="h-8 w-8 text-primary" />
-            <h2 className="text-xl font-bold">{kind === "csv" ? "CSV Export" : "Excel Export"}</h2>
-            <p className="text-sm text-muted-foreground">Download certificate records from MongoDB.</p>
-            <Button onClick={() => downloadExport(kind)}>Download</Button>
-          </CardContent>
-        </Card>
-      ))}
+    <div className="grid gap-5 xl:grid-cols-[460px_1fr]">
+      <Card>
+        <CardHeader><CardTitle>{editingOrganizationId ? "Edit Organization" : "Add Organization"}</CardTitle></CardHeader>
+        <CardContent>
+          <form onSubmit={onSubmit} className="grid gap-3">
+            <Input placeholder="Title" value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} required />
+            <Textarea placeholder="Description" value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} />
+            <Input type="file" accept="image/png,image/jpeg" onChange={onImageChange} />
+            {form.imageUrl ? <p className="truncate text-xs text-muted-foreground">{form.imageUrl}</p> : null}
+            <Input type="date" value={form.certificationDate} onChange={(e) => setForm({ ...form, certificationDate: e.target.value })} />
+            <select className="h-10 rounded-md border bg-background px-3 text-sm" value={form.status} onChange={(e) => setForm({ ...form, status: e.target.value })}>
+              <option>Certified</option>
+              <option>Active</option>
+            </select>
+            <div className="flex gap-2">
+              <Button type="submit"><Plus className="h-4 w-4" /> {editingOrganizationId ? "Update Organization" : "Save Organization"}</Button>
+              {editingOrganizationId ? <Button type="button" variant="outline" onClick={() => setEditingOrganizationId("")}>Cancel</Button> : null}
+            </div>
+          </form>
+        </CardContent>
+      </Card>
+      <TableCard title="Organizations">
+        {organizations.map((org) => {
+          const image = org.imageUrl?.startsWith("/uploads/") ? `${apiBase}${org.imageUrl}` : org.imageUrl;
+          return (
+            <div key={org._id} className="grid gap-3 border-b p-4 xl:grid-cols-[1.2fr_1fr_0.8fr_auto] xl:items-center">
+              <div>
+                <strong>{org.title}</strong>
+                {org.description ? <p className="truncate text-sm text-muted-foreground">{org.description}</p> : null}
+              </div>
+              <span className="text-sm text-muted-foreground">{org.certificationDate ? new Date(org.certificationDate).toLocaleDateString() : "-"}</span>
+              <Badge variant={org.status === "Certified" ? "success" : "outline"}>{org.status}</Badge>
+              <div className="flex gap-2">
+                {image ? <Button asChild size="sm" variant="outline"><a href={image} target="_blank" rel="noreferrer"><ImageIcon className="h-4 w-4" /></a></Button> : null}
+                <Button size="sm" variant="outline" onClick={() => editOrganization(org)}>Edit</Button>
+                <Button size="sm" variant="destructive" onClick={() => removeOrganization(org._id ?? "")}>Delete</Button>
+              </div>
+            </div>
+          );
+        })}
+      </TableCard>
     </div>
   );
 }
