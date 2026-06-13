@@ -11,8 +11,8 @@ const contactItems = [
   },
   {
     label: "Email",
-    value: "vjinternationalcertifications@example.com",
-    href: "mailto:vjinternationalcertifications@example.com",
+    value: "vjinternationalcertifications@gmail.com",
+    href: "mailto:vjinternationalcertifications@gmail.com",
     icon: Mail,
     accent: "text-amber-600 bg-amber-50"
   },
