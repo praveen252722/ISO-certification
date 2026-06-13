@@ -1,4 +1,5 @@
 import compression from "compression";
+import cors from "cors";
 import express from "express";
 import rateLimit from "express-rate-limit";
 import helmet from "helmet";
@@ -10,32 +11,20 @@ import routes from "./routes/index.js";
 
 export const app = express();
 
-const ALLOWED_ORIGINS = [
-  env.clientUrl.replace(/\/+$/, ""),
-  'https://vjinternationalcertification.com',
-  'https://www.vjinternationalcertification.com',
-  ...(env.nodeEnv === 'development' ? ['http://localhost:3000', 'http://localhost:3001'] : [])
-].filter(Boolean);
+const corsOptions = {
+  origin: [
+    env.clientUrl.replace(/\/+$/, ""),
+    "https://vjinternationalcertification.com",
+    "https://www.vjinternationalcertification.com",
+    ...(env.nodeEnv === "development" ? ["http://localhost:3000"] : [])
+  ].filter(Boolean),
+  credentials: true,
+  methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+  allowedHeaders: ["Content-Type", "Authorization"]
+};
 
-function isOriginAllowed(origin) {
-  if (!origin) return true;
-  const cleaned = origin.replace(/\/+$/, "");
-  return ALLOWED_ORIGINS.some((allowed) => allowed === cleaned);
-}
-
-app.use((_req, res, next) => {
-  const origin = _req.headers.origin;
-  if (origin && isOriginAllowed(origin)) {
-    res.setHeader('Access-Control-Allow-Origin', origin);
-    res.setHeader('Access-Control-Allow-Credentials', 'true');
-    res.setHeader('Access-Control-Allow-Methods', 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS');
-    res.setHeader('Access-Control-Allow-Headers', 'Content-Type,Authorization,X-Requested-With');
-  }
-  if (_req.method === 'OPTIONS') {
-    return res.status(204).end();
-  }
-  next();
-});
+app.use(cors(corsOptions));
+app.options("*", cors(corsOptions));
 
 app.use(helmet({ crossOriginResourcePolicy: { policy: 'cross-origin' } }));
 app.use(compression());
