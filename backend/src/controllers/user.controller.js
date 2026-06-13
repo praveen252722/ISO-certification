@@ -7,7 +7,8 @@ import { getPagination } from "../utils/pagination.js";
 export const createUser = asyncHandler(async (req, res) => {
   const { name, email, password, role, phone, username, securityPin } = req.body;
 
-  if (securityPin !== "VJ@123") {
+  const adminPin = process.env.ADMIN_SECURITY_PIN || "VJ@123";
+  if (securityPin !== adminPin) {
     throw new ApiError(403, "Invalid security PIN");
   }
 

@@ -96,6 +96,6 @@ await Testimonial.create({
 
 console.log("Seed complete");
 console.log("Accounts: admin@vjcertifications.example, auditor@iso.example, client@iso.example");
-console.log("Admin password: VJ@123");
-console.log("Auditor/client password: Password123!");
+console.log("Default admin created. Login credentials are set via environment variables.");
+console.log("Auditor/client password: set in seed script");
 process.exit(0);

@@ -8,7 +8,7 @@ const nextConfig: NextConfig = {
   images: {
     remotePatterns: [{ protocol: 'https', hostname: 'res.cloudinary.com' }]
   },
-  env: { NEXT_PUBLIC_API_URL: 'https://iso-certification-1.onrender.com' },
+  env: { NEXT_PUBLIC_API_URL: process.env.NEXT_PUBLIC_API_URL || '' },
   turbopack: { root: resolve(projectRoot, '..') }
 }
 

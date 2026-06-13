@@ -73,7 +73,7 @@ export default function AdminPage() {
   const [loading, setLoading] = useState(false);
   const [notice, setNotice] = useState("");
   const [error, setError] = useState("");
-  const [loginForm, setLoginForm] = useState({ username: "admin", password: "VJ@123" });
+  const [loginForm, setLoginForm] = useState({ username: "", password: "" });
   const [metrics, setMetrics] = useState<OverviewMetrics | null>(null);
   const [users, setUsers] = useState<AdminUser[]>([]);
   const [certificates, setCertificates] = useState<CertificateRecord[]>([]);
@@ -278,7 +278,7 @@ export default function AdminPage() {
       password: "",
       phone: user.phone ?? "",
       role: user.role ?? "STAFF",
-      securityPin: "VJ@123"
+      securityPin: ""
     });
     setTab("users");
   }

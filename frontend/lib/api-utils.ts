@@ -1,8 +1,8 @@
-const API_URL =
-  process.env.NEXT_PUBLIC_API_URL ||
-  "https://iso-certification-1.onrender.com";
+const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
 export async function adminApi<T>(path: string, options: RequestInit = {}): Promise<T> {
+  if (!API_URL) throw new Error("NEXT_PUBLIC_API_URL environment variable is not configured");
+
   const token = typeof window !== "undefined" ? localStorage.getItem("admin_token") : null;
   const headers = new Headers(options.headers);
   headers.set("Content-Type", "application/json");

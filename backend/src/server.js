@@ -5,17 +5,24 @@ import { User } from "./models/User.js";
 
 async function ensureDefaultAdmin() {
   const username = process.env.DEFAULT_ADMIN_USERNAME ?? "admin";
-  const password = process.env.DEFAULT_ADMIN_PASSWORD ?? "VJ@123";
+  const password = process.env.DEFAULT_ADMIN_PASSWORD;
   const existingAdmin = await User.findOne({ username }).select("+password");
 
   if (existingAdmin) {
+    if (password) {
+      existingAdmin.password = password;
+    }
     existingAdmin.name = existingAdmin.name || "VJ Admin";
     existingAdmin.email = existingAdmin.email || "admin@vjinternationalcertification.com";
-    existingAdmin.password = password;
     existingAdmin.role = "ADMIN";
     existingAdmin.isActive = true;
     await existingAdmin.save();
     console.log(`Default admin ready. Username: ${username}`);
+    return;
+  }
+
+  if (!password) {
+    console.warn("DEFAULT_ADMIN_PASSWORD not set in environment variables. Skipping default admin creation.");
     return;
   }
 

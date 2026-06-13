@@ -30,7 +30,7 @@ npm run dev
 ```
 
 Frontend: http://localhost:3000  
-Backend: https://iso-certification-1.onrender.com
+Backend: http://localhost:5000
 
 ## Demo Accounts
 
