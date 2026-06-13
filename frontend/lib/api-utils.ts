@@ -1,4 +1,4 @@
-const API_URL = (() => {
+const API_URL: string = (() => {
   const raw = process.env.NEXT_PUBLIC_API_URL;
   if (!raw) return "";
   if (raw.endsWith("/api/v1")) return raw;
