@@ -55,7 +55,7 @@ export function SiteFooter() {
           <div className="grid gap-3 text-sm text-slate-300">
             <span className="flex gap-2"><MapPin className="h-4 w-4 shrink-0 mt-0.5" /> 2-122/181/1, Sriram Nagar, Shamshiguda, Kukatpally, Hyderabad 500072</span>
             <span className="flex gap-2"><Phone className="h-4 w-4 shrink-0 mt-0.5" /> +91 73861 81914</span>
-            <span className="flex gap-2"><Mail className="h-4 w-4 shrink-0 mt-0.5" /> info@vjinternationalcertification.com</span>
+            <span className="flex gap-2"><Mail className="h-4 w-4 shrink-0 mt-0.5" /> vjinternationalcertification@gmail.com</span>
           </div>
         </div>
 

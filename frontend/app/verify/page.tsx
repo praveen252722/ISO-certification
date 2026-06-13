@@ -1,20 +1,19 @@
 "use client";
 
-import { FormEvent, Suspense, useEffect, useMemo, useState } from "react";
+import { FormEvent, Suspense, useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
-import { CheckCircle2, Download, Search, ShieldAlert, XCircle } from "lucide-react";
+import { CheckCircle2, Search, ShieldAlert, XCircle } from "lucide-react";
 import { PublicLayout } from "@/components/site/public-layout";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { API_URL, apiClient } from "@/services/api";
+import { apiClient } from "@/services/api";
 import { formatDate } from "@/lib/utils";
 
 interface CertificateRecord {
   clientName?: string;
   companyName?: string;
-  certificateId: string;
   certificateNumber: string;
   certificateType: string;
   certificationScope?: string;
@@ -24,8 +23,6 @@ interface CertificateRecord {
   email?: string;
   phone?: string;
   address?: string;
-  certificatePdf?: string;
-  downloadUrl?: string;
 }
 
 interface VerifyResponse {
@@ -57,22 +54,16 @@ function VerifyLoading() {
 
 function VerifyCertificateContent() {
   const searchParams = useSearchParams();
-  const initialQuery = searchParams.get("certificateId") ?? "";
+  const initialQuery = searchParams.get("certificateNumber") ?? "";
   const [query, setQuery] = useState(initialQuery);
   const [result, setResult] = useState<CertificateRecord | null>(null);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
-  const downloadUrl = useMemo(() => {
-    if (!result) return "";
-    const path = result.downloadUrl ?? `/api/v1/certificates/${result.certificateId}/download`;
-    return path.startsWith("http") ? path : `${API_URL.replace(/\/api\/v1$/, "")}${path}`;
-  }, [result]);
-
   async function searchCertificate(value = query) {
-    const certificateId = value.trim();
-    if (!certificateId) {
-      setError("Enter a certificate ID.");
+    const certificateNumber = value.trim();
+    if (!certificateNumber) {
+      setError("Enter a certificate number.");
       setResult(null);
       return;
     }
@@ -81,7 +72,7 @@ function VerifyCertificateContent() {
     setError("");
 
     try {
-      const data = await apiClient<VerifyResponse>(`/certificates/verify/${encodeURIComponent(certificateId)}`);
+      const data = await apiClient<VerifyResponse>(`/certificates/verify/${encodeURIComponent(certificateNumber)}`);
       setResult(data.certificate);
     } catch (requestError) {
       setResult(null);
@@ -109,9 +100,9 @@ function VerifyCertificateContent() {
         <div className="mx-auto max-w-3xl text-center">
           <Badge variant="success">Public certificate verification</Badge>
           <h1 className="mt-4 text-4xl font-extrabold tracking-normal">Verify Certificate</h1>
-          <p className="mt-4 text-muted-foreground">Search by certificate ID to verify a certificate and download the uploaded PDF.</p>
+          <p className="mt-4 text-muted-foreground">Search by certificate number to verify a certificate.</p>
           <form onSubmit={handleSubmit} className="mt-8 flex flex-col gap-2 sm:flex-row">
-            <Input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Enter certificate ID" />
+            <Input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Enter certificate number" />
             <Button type="submit" disabled={loading}>
               <Search className="h-4 w-4" /> {loading ? "Searching" : "Search"}
             </Button>
@@ -125,36 +116,24 @@ function VerifyCertificateContent() {
                 {valid ? <CheckCircle2 className="h-5 w-5" /> : <XCircle className="h-5 w-5" />}
                 {valid ? "Certificate Valid" : "Certificate Invalid"}
               </div>
-              <CardContent className="grid gap-8 p-6 md:grid-cols-[1fr_240px]">
-                <div>
-                  <h2 className="text-2xl font-extrabold">{result.companyName || result.clientName}</h2>
-                  <div className="mt-5 grid gap-4 sm:grid-cols-2">
-                    <Info label="Client Name" value={result.clientName ?? "Not provided"} />
-                    <Info label="Company Name" value={result.companyName ?? "Not provided"} />
-                    <Info label="Certificate ID" value={result.certificateId} />
-                    <Info label="Certificate Number" value={result.certificateNumber} />
-                    <Info label="Certificate Type" value={result.certificateType} />
-                    <Info label="Issue Date" value={formatDate(result.issueDate)} />
-                    <Info label="Expiry Date" value={formatDate(result.expiryDate)} />
-                    <Info label="Status" value={result.status} />
-                    <Info label="Address" value={result.address ?? "Not provided"} />
+              <CardContent className="grid gap-6 p-6">
+                <h2 className="text-2xl font-extrabold">{result.companyName || result.clientName}</h2>
+                <div className="grid gap-4 sm:grid-cols-2">
+                  <Info label="Client Name" value={result.clientName ?? "Not provided"} />
+                  <Info label="Company Name" value={result.companyName ?? "Not provided"} />
+                  <Info label="Certificate Number" value={result.certificateNumber} />
+                  <Info label="Certificate Type" value={result.certificateType} />
+                  <Info label="Issue Date" value={formatDate(result.issueDate)} />
+                  <Info label="Expiry Date" value={formatDate(result.expiryDate)} />
+                  <Info label="Status" value={result.status} />
+                  <Info label="Address" value={result.address ?? "Not provided"} />
+                </div>
+                {result.certificationScope ? (
+                  <div className="rounded-md border bg-background p-4">
+                    <p className="text-xs font-semibold uppercase text-muted-foreground">Certification Scope</p>
+                    <p className="mt-1 leading-7">{result.certificationScope}</p>
                   </div>
-                  {result.certificationScope ? (
-                    <div className="mt-4 rounded-md border bg-background p-4">
-                      <p className="text-xs font-semibold uppercase text-muted-foreground">Certification Scope</p>
-                      <p className="mt-1 leading-7">{result.certificationScope}</p>
-                    </div>
-                  ) : null}
-                </div>
-                <div className="flex flex-col items-center justify-center rounded-lg border bg-muted p-4 text-center">
-                  <Download className="h-14 w-14 text-primary" />
-                  <p className="mt-3 text-sm text-muted-foreground">View or download the uploaded certificate PDF.</p>
-                  <Button asChild className="mt-4 w-full">
-                    <a href={downloadUrl} target="_blank" rel="noreferrer">
-                      <Download className="h-4 w-4" /> View PDF
-                    </a>
-                  </Button>
-                </div>
+                ) : null}
               </CardContent>
             </Card>
           ) : (
@@ -165,7 +144,7 @@ function VerifyCertificateContent() {
                 </CardTitle>
               </CardHeader>
               <CardContent className="text-muted-foreground">
-                {error ? "Certificate is invalid or not found." : "Enter the certificate ID printed on the certificate."}
+                {error ? "Certificate is invalid or not found." : "Enter the certificate number printed on the certificate."}
               </CardContent>
             </Card>
           )}

@@ -64,8 +64,6 @@ export interface Certificate {
   issueDate: string;
   expiryDate: string;
   status: CertificateStatus;
-  qrCode?: string;
-  pdfUrl?: string;
   issuedBy?: string | User;
   createdAt: string;
 }

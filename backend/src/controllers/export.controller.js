@@ -2,7 +2,6 @@ import { Certificate } from "../models/Certificate.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 
 const columns = [
-  ["certificateId", "Certificate ID"],
   ["certificateNumber", "Certificate Number"],
   ["clientName", "Client Name"],
   ["companyName", "Company Name"],
@@ -13,8 +12,7 @@ const columns = [
   ["status", "Status"],
   ["email", "Email"],
   ["phone", "Phone"],
-  ["address", "Address"],
-  ["certificatePdf", "PDF"]
+  ["address", "Address"]
 ];
 
 function formatValue(value) {

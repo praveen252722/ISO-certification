@@ -1,35 +1,21 @@
 "use client";
 
 import { ChangeEvent, FormEvent, useEffect, useMemo, useState } from "react";
-import { BarChart3, Building2, Download, FileCheck2, ImageIcon, LayoutDashboard, Loader2, LogOut, Plus, RefreshCw, Search, ShieldCheck, Users } from "lucide-react";
+import { Building2, Download, FileCheck2, ImageIcon, LayoutDashboard, Loader2, LogOut, Plus, RefreshCw, Search, ShieldCheck } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { API_URL, apiClient } from "@/services/api";
-import { formatCurrency, formatDate } from "@/lib/utils";
 
-type Tab = "dashboard" | "users" | "certificates" | "organizations";
-
-interface AdminUser {
-  id?: string;
-  _id?: string;
-  name: string;
-  username?: string;
-  email: string;
-  phone?: string;
-  role: string;
-  isActive?: boolean;
-  createdAt?: string;
-}
+type Tab = "dashboard" | "certificates" | "organizations";
 
 interface CertificateRecord {
   _id?: string;
   id?: string;
   clientName: string;
   companyName: string;
-  certificateId: string;
   certificateNumber: string;
   certificateType: string;
   certificationScope?: string;
@@ -39,7 +25,6 @@ interface CertificateRecord {
   email?: string;
   phone?: string;
   address?: string;
-  certificatePdf?: string;
 }
 
 interface OrganizationRecord {
@@ -55,14 +40,12 @@ interface OverviewMetrics {
   totalCertifications: number;
   activeCertificates: number;
   expiredCertificates: number;
-  users: number;
   byType: Array<{ _id: string; count: number }>;
 }
 
 const emptyCertificate = {
   clientName: "",
   companyName: "",
-  certificateId: "",
   certificateNumber: "",
   certificateType: "ISO 9001:2015",
   certificationScope: "",
@@ -71,8 +54,7 @@ const emptyCertificate = {
   status: "ACTIVE",
   email: "",
   phone: "",
-  address: "",
-  certificatePdf: ""
+  address: ""
 };
 
 const emptyOrganization = {
@@ -85,20 +67,16 @@ const emptyOrganization = {
 
 export default function AdminPage() {
   const [token, setToken] = useState("");
-  const [admin, setAdmin] = useState<AdminUser | null>(null);
+  const [admin, setAdmin] = useState<{ name: string; email: string; role: string } | null>(null);
   const [tab, setTab] = useState<Tab>("dashboard");
   const [loading, setLoading] = useState(false);
   const [notice, setNotice] = useState("");
   const [error, setError] = useState("");
   const [loginForm, setLoginForm] = useState({ username: "", password: "" });
   const [metrics, setMetrics] = useState<OverviewMetrics | null>(null);
-  const [users, setUsers] = useState<AdminUser[]>([]);
   const [certificates, setCertificates] = useState<CertificateRecord[]>([]);
-  const [revenue, setRevenue] = useState<{ monthly: Array<{ month: string; total: number; count: number }>; recent: Array<Record<string, unknown>> }>({ monthly: [], recent: [] });
   const [certificateForm, setCertificateForm] = useState(emptyCertificate);
   const [editingCertificateId, setEditingCertificateId] = useState("");
-  const [userForm, setUserForm] = useState({ name: "", username: "", email: "", password: "", phone: "", role: "STAFF", securityPin: "" });
-  const [editingUserId, setEditingUserId] = useState("");
   const [search, setSearch] = useState("");
   const [organizations, setOrganizations] = useState<OrganizationRecord[]>([]);
   const [organizationForm, setOrganizationForm] = useState(emptyOrganization);
@@ -127,7 +105,7 @@ export default function AdminPage() {
     setLoading(true);
     setError("");
     try {
-      const data = await apiClient<{ token: string; user: AdminUser }>("/auth/admin-login", {
+      const data = await apiClient<{ token: string; user: { name: string; email: string; role: string } }>("/auth/admin-login", {
         method: "POST",
         body: JSON.stringify(loginForm)
       });
@@ -154,53 +132,16 @@ export default function AdminPage() {
     setLoading(true);
     setError("");
     try {
-      const [overview, userData, certificateData, organizationData, revenueData] = await Promise.all([
+      const [overview, certificateData, organizationData] = await Promise.all([
         request<{ metrics: OverviewMetrics }>("/analytics/overview"),
-        request<{ items: AdminUser[] }>("/users?limit=50"),
         request<{ items: CertificateRecord[] }>("/certificates?limit=50"),
-        request<{ items: OrganizationRecord[] }>("/organizations/admin?limit=50"),
-        Promise.resolve({ monthly: [], recent: [] })
+        request<{ items: OrganizationRecord[] }>("/organizations/admin?limit=50")
       ]);
       setMetrics(overview.metrics);
-      setUsers(userData.items ?? []);
       setCertificates(certificateData.items ?? []);
       setOrganizations(organizationData.items ?? []);
-      setRevenue(revenueData);
     } catch (loadError) {
       setError(loadError instanceof Error ? loadError.message : "Unable to load admin data");
-    } finally {
-      setLoading(false);
-    }
-  }
-
-  async function uploadPdf(file?: File) {
-    if (!file) return "";
-    const formData = new FormData();
-    formData.append("certificatePdf", file);
-
-    const response = await fetch(`${API_URL}/certificates/upload-pdf`, {
-      method: "POST",
-      headers: { Authorization: `Bearer ${token}` },
-      body: formData
-    });
-
-    const data = await response.json();
-    if (!response.ok) throw new Error(data.message ?? "PDF upload failed");
-    const url = data.file.url as string;
-    return url.startsWith("/uploads/") ? `${apiBase}${url}` : url;
-  }
-
-  async function handlePdfChange(event: ChangeEvent<HTMLInputElement>) {
-    const file = event.target.files?.[0];
-    if (!file) return;
-    setLoading(true);
-    setError("");
-    try {
-      const url = await uploadPdf(file);
-      setCertificateForm((current) => ({ ...current, certificatePdf: url }));
-      setNotice("Certificate PDF uploaded.");
-    } catch (uploadError) {
-      setError(uploadError instanceof Error ? uploadError.message : "PDF upload failed");
     } finally {
       setLoading(false);
     }
@@ -211,11 +152,7 @@ export default function AdminPage() {
     setLoading(true);
     setError("");
     try {
-      const payload = {
-        ...certificateForm,
-        certificateId: certificateForm.certificateId.trim().toUpperCase(),
-        certificateNumber: certificateForm.certificateNumber.trim() || certificateForm.certificateId.trim().toUpperCase()
-      };
+      const payload = { ...certificateForm };
       if (editingCertificateId) {
         await request(`/certificates/${encodeURIComponent(editingCertificateId)}`, { method: "PUT", body: JSON.stringify(payload) });
       } else {
@@ -227,36 +164,6 @@ export default function AdminPage() {
       await loadAdminData();
     } catch (saveError) {
       setError(saveError instanceof Error ? saveError.message : "Certificate save failed");
-    } finally {
-      setLoading(false);
-    }
-  }
-
-  async function createUser(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-    setLoading(true);
-    setError("");
-    try {
-      if (editingUserId) {
-        await request(`/users/${editingUserId}`, {
-          method: "PUT",
-          body: JSON.stringify({
-            name: userForm.name,
-            username: userForm.username,
-            email: userForm.email,
-            phone: userForm.phone
-          })
-        });
-        await request(`/users/${editingUserId}/role`, { method: "PUT", body: JSON.stringify({ role: userForm.role }) });
-      } else {
-        await request("/users", { method: "POST", body: JSON.stringify(userForm) });
-      }
-      setUserForm({ name: "", username: "", email: "", password: "", phone: "", role: "STAFF", securityPin: "" });
-      setEditingUserId("");
-      setNotice(editingUserId ? "User updated." : "User created.");
-      await loadAdminData();
-    } catch (saveError) {
-      setError(saveError instanceof Error ? saveError.message : "User save failed");
     } finally {
       setLoading(false);
     }
@@ -276,42 +183,12 @@ export default function AdminPage() {
     }
   }
 
-  async function removeUser(id: string) {
-    if (!confirm("Delete this user?")) return;
-    setLoading(true);
-    try {
-      await request(`/users/${id}`, { method: "DELETE" });
-      setNotice("User deleted.");
-      await loadAdminData();
-    } catch (deleteError) {
-      setError(deleteError instanceof Error ? deleteError.message : "Delete failed");
-    } finally {
-      setLoading(false);
-    }
-  }
-
-  function editUser(user: AdminUser) {
-    const id = user._id ?? user.id ?? "";
-    setEditingUserId(id);
-    setUserForm({
-      name: user.name ?? "",
-      username: user.username ?? "",
-      email: user.email ?? "",
-      password: "",
-      phone: user.phone ?? "",
-      role: user.role ?? "STAFF",
-      securityPin: ""
-    });
-    setTab("users");
-  }
-
   function editCertificate(certificate: CertificateRecord) {
-    const id = certificate.certificateId || certificate._id || certificate.id || "";
+    const id = certificate._id || certificate.id || certificate.certificateNumber || "";
     setEditingCertificateId(id);
     setCertificateForm({
       clientName: certificate.clientName ?? "",
       companyName: certificate.companyName ?? "",
-      certificateId: certificate.certificateId ?? "",
       certificateNumber: certificate.certificateNumber ?? "",
       certificateType: certificate.certificateType ?? "",
       certificationScope: certificate.certificationScope ?? "",
@@ -320,8 +197,7 @@ export default function AdminPage() {
       status: certificate.status ?? "ACTIVE",
       email: certificate.email ?? "",
       phone: certificate.phone ?? "",
-      address: certificate.address ?? "",
-      certificatePdf: certificate.certificatePdf ?? ""
+      address: certificate.address ?? ""
     });
     setTab("certificates");
   }
@@ -423,7 +299,7 @@ export default function AdminPage() {
   }
 
   const visibleCertificates = certificates.filter((item) => {
-    const text = `${item.clientName} ${item.companyName} ${item.certificateId} ${item.certificateNumber}`.toLowerCase();
+    const text = `${item.clientName} ${item.companyName} ${item.certificateNumber}`.toLowerCase();
     return text.includes(search.toLowerCase());
   });
 
@@ -466,7 +342,6 @@ export default function AdminPage() {
         <nav className="flex gap-2 overflow-x-auto px-4 pb-4 lg:px-8">
           {[
             ["dashboard", LayoutDashboard, "Dashboard"],
-            ["users", Users, "Users"],
             ["certificates", FileCheck2, "Certificates"],
             ["organizations", Building2, "Organizations"]
           ].map(([key, Icon, label]) => (
@@ -481,13 +356,11 @@ export default function AdminPage() {
         {notice ? <p className="rounded-md bg-emerald-50 p-3 text-sm font-semibold text-emerald-700">{notice}</p> : null}
         {error ? <p className="rounded-md bg-red-50 p-3 text-sm font-semibold text-red-700">{error}</p> : null}
         {tab === "dashboard" ? <Dashboard metrics={metrics} /> : null}
-        {tab === "users" ? <UsersPanel users={users} userForm={userForm} setUserForm={setUserForm} createUser={createUser} editingUserId={editingUserId} setEditingUserId={setEditingUserId} editUser={editUser} removeUser={removeUser} /> : null}
         {tab === "certificates" ? (
           <CertificatesPanel
             form={certificateForm}
             setForm={setCertificateForm}
             onSubmit={createCertificate}
-            onPdfChange={handlePdfChange}
             certificates={visibleCertificates}
             search={search}
             setSearch={setSearch}
@@ -495,7 +368,6 @@ export default function AdminPage() {
             editCertificate={editCertificate}
             editingCertificateId={editingCertificateId}
             setEditingCertificateId={setEditingCertificateId}
-            apiBase={apiBase}
             onExport={downloadExport}
           />
         ) : null}
@@ -522,8 +394,7 @@ function Dashboard({ metrics }: { metrics: OverviewMetrics | null }) {
   const cards = [
     ["Total Certifications", metrics?.totalCertifications ?? 0],
     ["Active Certificates", metrics?.activeCertificates ?? 0],
-    ["Expired Certificates", metrics?.expiredCertificates ?? 0],
-    ["Users", metrics?.users ?? 0]
+    ["Expired Certificates", metrics?.expiredCertificates ?? 0]
   ];
 
   return (
@@ -551,63 +422,10 @@ function Dashboard({ metrics }: { metrics: OverviewMetrics | null }) {
   );
 }
 
-function UsersPanel({ users, userForm, setUserForm, createUser, editingUserId, setEditingUserId, editUser, removeUser }: {
-  users: AdminUser[];
-  userForm: { name: string; username: string; email: string; password: string; phone: string; role: string; securityPin: string };
-  setUserForm: (value: { name: string; username: string; email: string; password: string; phone: string; role: string; securityPin: string }) => void;
-  createUser: (event: FormEvent<HTMLFormElement>) => void;
-  editingUserId: string;
-  setEditingUserId: (value: string) => void;
-  editUser: (user: AdminUser) => void;
-  removeUser: (id: string) => void;
-}) {
-  return (
-    <div className="grid gap-5 xl:grid-cols-[420px_1fr]">
-      <Card>
-        <CardHeader><CardTitle>Create User</CardTitle></CardHeader>
-        <CardContent>
-          <form onSubmit={createUser} className="grid gap-3">
-            <Input placeholder="Name" value={userForm.name} onChange={(e) => setUserForm({ ...userForm, name: e.target.value })} required />
-            <Input placeholder="Username" value={userForm.username} onChange={(e) => setUserForm({ ...userForm, username: e.target.value })} />
-            <Input type="email" placeholder="Email" value={userForm.email} onChange={(e) => setUserForm({ ...userForm, email: e.target.value })} required />
-            <Input placeholder="Phone" value={userForm.phone} onChange={(e) => setUserForm({ ...userForm, phone: e.target.value })} />
-            <select className="h-10 rounded-md border bg-background px-3 text-sm" value={userForm.role} onChange={(e) => setUserForm({ ...userForm, role: e.target.value })}>
-              <option>STAFF</option>
-              <option>AUDITOR</option>
-              <option>CLIENT</option>
-              <option>ADMIN</option>
-            </select>
-            <Input type="password" placeholder={editingUserId ? "Leave blank when editing" : "Password"} value={userForm.password} onChange={(e) => setUserForm({ ...userForm, password: e.target.value })} required={!editingUserId} />
-            {!editingUserId ? <Input placeholder="Security PIN" value={userForm.securityPin} onChange={(e) => setUserForm({ ...userForm, securityPin: e.target.value })} required /> : null}
-            <div className="flex gap-2">
-              <Button type="submit"><Plus className="h-4 w-4" /> {editingUserId ? "Update User" : "Add User"}</Button>
-              {editingUserId ? <Button type="button" variant="outline" onClick={() => setEditingUserId("")}>Cancel</Button> : null}
-            </div>
-          </form>
-        </CardContent>
-      </Card>
-      <TableCard title="Users">
-        {users.map((user) => (
-          <div key={user._id ?? user.id ?? user.email} className="grid gap-2 border-b p-4 md:grid-cols-4">
-            <strong>{user.name}</strong>
-            <span>{user.email}</span>
-            <Badge variant={user.role === "ADMIN" ? "warning" : "outline"}>{user.role}</Badge>
-            <div className="flex gap-2">
-              <Button size="sm" variant="outline" onClick={() => editUser(user)}>Edit</Button>
-              <Button size="sm" variant="destructive" onClick={() => removeUser(user._id ?? user.id ?? "")}>Delete</Button>
-            </div>
-          </div>
-        ))}
-      </TableCard>
-    </div>
-  );
-}
-
-function CertificatesPanel({ form, setForm, onSubmit, onPdfChange, certificates, search, setSearch, removeCertificate, editCertificate, editingCertificateId, setEditingCertificateId, apiBase, onExport }: {
+function CertificatesPanel({ form, setForm, onSubmit, certificates, search, setSearch, removeCertificate, editCertificate, editingCertificateId, setEditingCertificateId, onExport }: {
   form: typeof emptyCertificate;
   setForm: (value: typeof emptyCertificate) => void;
   onSubmit: (event: FormEvent<HTMLFormElement>) => void;
-  onPdfChange: (event: ChangeEvent<HTMLInputElement>) => void;
   certificates: CertificateRecord[];
   search: string;
   setSearch: (value: string) => void;
@@ -615,7 +433,6 @@ function CertificatesPanel({ form, setForm, onSubmit, onPdfChange, certificates,
   editCertificate: (certificate: CertificateRecord) => void;
   editingCertificateId: string;
   setEditingCertificateId: (value: string) => void;
-  apiBase: string;
   onExport?: (kind: "csv" | "xls") => void;
 }) {
   return (
@@ -626,8 +443,7 @@ function CertificatesPanel({ form, setForm, onSubmit, onPdfChange, certificates,
           <form onSubmit={onSubmit} className="grid gap-3">
             <Input placeholder="Client name" value={form.clientName} onChange={(e) => setForm({ ...form, clientName: e.target.value })} required />
             <Input placeholder="Company name" value={form.companyName} onChange={(e) => setForm({ ...form, companyName: e.target.value })} required />
-            <Input placeholder="Certificate ID" value={form.certificateId} onChange={(e) => setForm({ ...form, certificateId: e.target.value })} required />
-            <Input placeholder="Certificate number" value={form.certificateNumber} onChange={(e) => setForm({ ...form, certificateNumber: e.target.value })} />
+            <Input placeholder="Certificate number" value={form.certificateNumber} onChange={(e) => setForm({ ...form, certificateNumber: e.target.value })} required />
             <Input placeholder="Certificate type" value={form.certificateType} onChange={(e) => setForm({ ...form, certificateType: e.target.value })} required />
             <Textarea placeholder="Certification scope" value={form.certificationScope} onChange={(e) => setForm({ ...form, certificationScope: e.target.value })} />
             <div className="grid gap-3 sm:grid-cols-2">
@@ -637,7 +453,6 @@ function CertificatesPanel({ form, setForm, onSubmit, onPdfChange, certificates,
             <Textarea placeholder="Address" value={form.address} onChange={(e) => setForm({ ...form, address: e.target.value })} />
             <Input placeholder="Email" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} />
             <Input placeholder="Phone" value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} />
-            <Input type="file" accept="application/pdf" onChange={onPdfChange} />
             <div className="flex gap-2">
               <Button type="submit"><Plus className="h-4 w-4" /> {editingCertificateId ? "Update Certificate" : "Save Certificate"}</Button>
               {editingCertificateId ? <Button type="button" variant="outline" onClick={() => setEditingCertificateId("")}>Cancel</Button> : null}
@@ -645,50 +460,37 @@ function CertificatesPanel({ form, setForm, onSubmit, onPdfChange, certificates,
           </form>
         </CardContent>
       </Card>
-      <TableCard title="Certificate Management" action={<div className="flex flex-wrap items-center gap-2"><div className="relative w-full max-w-sm"><Search className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" /><Input className="pl-9" placeholder="Search certificates" value={search} onChange={(e) => setSearch(e.target.value)} /></div>{onExport ? <><Button size="sm" variant="outline" onClick={() => onExport("csv")}><Download className="h-4 w-4" /> CSV</Button><Button size="sm" variant="outline" onClick={() => onExport("xls")}><Download className="h-4 w-4" /> XLS</Button></> : null}</div>}>
-        {certificates.map((certificate) => {
-          const id = certificate.certificateId || certificate._id || certificate.id || certificate.certificateNumber;
-          const pdf = certificate.certificatePdf?.startsWith("/uploads/") ? `${apiBase}${certificate.certificatePdf}` : certificate.certificatePdf;
-          return (
-            <div key={id} className="grid gap-3 border-b p-4 xl:grid-cols-[1.2fr_1fr_0.8fr_0.8fr_auto] xl:items-center">
-              <div>
-                <strong>{certificate.companyName}</strong>
-                <p className="text-sm text-muted-foreground">{certificate.clientName}</p>
-              </div>
-              <span>{certificate.certificateId}</span>
-              <span>{certificate.certificateType}</span>
-              <Badge variant={certificate.status === "ACTIVE" ? "success" : "warning"}>{certificate.status}</Badge>
-              <div className="flex gap-2">
-                {pdf ? <Button asChild size="sm" variant="outline"><a href={pdf} target="_blank" rel="noreferrer">PDF</a></Button> : null}
-                <Button size="sm" variant="outline" onClick={() => editCertificate(certificate)}>Edit</Button>
-                <Button size="sm" variant="destructive" onClick={() => removeCertificate(id)}>Delete</Button>
-              </div>
-            </div>
-          );
-        })}
-      </TableCard>
-    </div>
-  );
-}
-
-function RevenuePanel({ revenue }: { revenue: { monthly: Array<{ month: string; total: number; count: number }>; recent: Array<Record<string, unknown>> } }) {
-  const max = Math.max(...revenue.monthly.map((item) => item.total), 1);
-  return (
-    <div className="grid gap-5">
       <Card>
-        <CardHeader><CardTitle>Revenue Overview</CardTitle></CardHeader>
-        <CardContent className="grid gap-4">
-          {revenue.monthly.length ? revenue.monthly.map((item) => (
-            <div key={item.month}>
-              <div className="mb-1 flex justify-between text-sm">
-                <span>{item.month}</span>
-                <strong>{formatCurrency(item.total)}</strong>
-              </div>
-              <div className="h-3 rounded-full bg-muted">
-                <div className="h-3 rounded-full bg-primary" style={{ width: `${Math.max((item.total / max) * 100, 4)}%` }} />
-              </div>
+        <CardHeader className="flex flex-row items-center justify-between">
+          <CardTitle>Certificate Management</CardTitle>
+          <div className="flex items-center gap-2">
+            {onExport ? <Button size="sm" variant="outline" onClick={() => onExport("xls")}><Download className="h-4 w-4" /> Export</Button> : null}
+            <div className="relative">
+              <Search className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" />
+              <Input className="w-48 pl-9" placeholder="Search" value={search} onChange={(e) => setSearch(e.target.value)} />
             </div>
-          )) : <p className="text-muted-foreground">No paid revenue records yet.</p>}
+          </div>
+        </CardHeader>
+        <CardContent className="p-0">
+          <div className="overflow-hidden rounded-b-lg">
+            {certificates.map((certificate) => {
+              const id = certificate._id || certificate.id || certificate.certificateNumber;
+              return (
+                <div key={id} className="grid gap-3 border-b p-4 xl:grid-cols-[1.2fr_1fr_0.8fr_auto] xl:items-center">
+                  <div>
+                    <strong>{certificate.companyName}</strong>
+                    <p className="text-sm text-muted-foreground">{certificate.clientName}</p>
+                  </div>
+                  <span>{certificate.certificateType}</span>
+                  <Badge variant={certificate.status === "ACTIVE" ? "success" : "warning"}>{certificate.status}</Badge>
+                  <div className="flex gap-2">
+                    <Button size="sm" variant="outline" onClick={() => editCertificate(certificate)}>Edit</Button>
+                    <Button size="sm" variant="destructive" onClick={() => removeCertificate(id)}>Delete</Button>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
         </CardContent>
       </Card>
     </div>

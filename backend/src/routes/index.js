@@ -5,7 +5,6 @@ import { certificateRoutes } from "./certificate.routes.js";
 import { exportRoutes } from "./export.routes.js";
 import { organizationRoutes } from "./organization.routes.js";
 import { projectRoutes } from "./project.routes.js";
-import { userRoutes } from "./users.routes.js";
 import { connectMongoDB } from "../lib/mongodb.js";
 import { env } from "../config/env.js";
 
@@ -21,7 +20,6 @@ router.get("/test-db", async (_req, res, next) => {
   }
 });
 router.use("/auth", authRoutes);
-router.use("/users", userRoutes);
 router.use("/certificates", certificateRoutes);
 router.use("/organizations", organizationRoutes);
 router.use("/projects", projectRoutes);

@@ -53,7 +53,6 @@ const application = await Application.create({
 await Certificate.create({
   clientName: client.name,
   companyName: company.name,
-  certificateId: "ISO-2026-9001-1842",
   certificateNumber: "ISO-2026-9001-1842",
   certificateType: "ISO 9001",
   certificationScope: "Quality management system for precision manufacturing",
