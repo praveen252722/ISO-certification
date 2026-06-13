@@ -12,9 +12,8 @@ import routes from "./routes/index.js";
 
 export const app = express();
 
-app.use(helmet());
 const allowedOrigins = [
-  env.clientUrl,
+  env.clientUrl.replace(/\/+$/, ""),
   'https://vjinternationalcertification.com',
   'https://www.vjinternationalcertification.com',
   ...(env.nodeEnv === 'development' ? ['http://localhost:3000', 'http://localhost:3001'] : [])
@@ -22,14 +21,21 @@ const allowedOrigins = [
 
 app.use(cors({
   origin: (origin, callback) => {
-    if (!origin || allowedOrigins.includes(origin)) {
-      callback(null, true);
-    } else {
-      callback(new Error('Not allowed by CORS'));
+    if (!origin) return callback(null, true);
+    if (allowedOrigins.includes(origin.replace(/\/+$/, ""))) {
+      return callback(null, true);
     }
+    console.warn(`CORS blocked origin: ${origin}`);
+    return callback(null, false);
   },
-  credentials: true
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With']
 }));
+
+app.options('*', cors());
+
+app.use(helmet({ crossOriginResourcePolicy: { policy: 'cross-origin' } }));
 app.use(compression());
 app.use(express.json({ limit: "1mb" }));
 app.use(express.urlencoded({ extended: true }));
