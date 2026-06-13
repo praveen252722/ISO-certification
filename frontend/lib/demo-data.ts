@@ -22,10 +22,10 @@ export const navItems = [
 ];
 
 export const counters = [
-  { label: "Certified Companies", value: "3,240+" },
+  { label: "Certified Companies", value: "1,240+" },
   { label: "Audit Completion", value: "98.7%" },
   { label: "Countries Served", value: "22" },
-  { label: "Certificates Issued", value: "8,900+" }
+  { label: "Certificates Issued", value: "1,500+" }
 ];
 
 export const certificationTypes = [
