@@ -11,8 +11,19 @@ dotenv.config({ path: resolve(backendRoot, ".env.local") });
 dotenv.config();
 
 function resolveMongoUri() {
-  const uri = process.env.MONGODB_URI;
-  if (!uri) return "mongodb://127.0.0.1:27017/vj_certification";
+  const raw = process.env.MONGODB_URI;
+  if (!raw) {
+    throw new Error("MONGODB_URI environment variable is not set");
+  }
+
+  let uri = raw.trim();
+  if (uri.startsWith("MONGODB_URI=")) {
+    uri = uri.slice("MONGODB_URI=".length);
+  }
+
+  if (!uri.startsWith("mongodb://") && !uri.startsWith("mongodb+srv://")) {
+    throw new Error(`MONGODB_URI must start with "mongodb://" or "mongodb+srv://". Got: ${uri.slice(0, 30)}...`);
+  }
 
   if (envIsDevelopment() && (uri.includes("<db_password>") || uri.includes("YOUR_DATABASE_PASSWORD"))) {
     console.warn("MONGODB_URI contains a placeholder password. Using local MongoDB for development: mongodb://127.0.0.1:27017/vj_certification");
