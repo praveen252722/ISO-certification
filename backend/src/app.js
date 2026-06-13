@@ -9,6 +9,8 @@ import { connectMongoDB } from "./lib/mongodb.js";
 import { errorHandler, notFound } from "./middleware/error.middleware.js";
 import routes from "./routes/index.js";
 
+export const app = express();
+
 const ALLOWED_ORIGINS = [
   env.clientUrl.replace(/\/+$/, ""),
   'https://vjinternationalcertification.com',
