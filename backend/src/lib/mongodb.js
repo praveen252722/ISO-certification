@@ -23,7 +23,7 @@ export async function connectMongoDB(uri = process.env.MONGODB_URI) {
   if (!cached.promise) {
     mongoose.set("strictQuery", true);
     cached.promise = mongoose.connect(uri, {
-      bufferCommands: false
+      bufferCommands: true
     }).catch((error) => {
       cached.promise = null;
       throw enhanceMongoError(error, uri);

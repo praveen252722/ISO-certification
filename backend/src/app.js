@@ -3,6 +3,7 @@ import cors from "cors";
 import express from "express";
 import rateLimit from "express-rate-limit";
 import helmet from "helmet";
+import mongoose from "mongoose";
 import morgan from "morgan";
 import { join } from "path";
 import { env } from "./config/env.js";
@@ -36,6 +37,14 @@ app.use(rateLimit({ windowMs: 15 * 60 * 1000, limit: 250, standardHeaders: true,
 
 app.get("/api/v1/health", (_req, res) => {
   res.json({ status: "ok" });
+});
+
+app.use("/api/v1", (req, res, next) => {
+  if (mongoose.connection.readyState === 1) return next();
+  res.status(503).json({
+    success: false,
+    message: "Database connection not ready. Please try again in a few seconds."
+  });
 });
 
 app.use("/api/v1", routes);
