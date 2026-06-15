@@ -2,6 +2,7 @@ import { Certificate } from "../models/Certificate.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 
 const columns = [
+  ["certificateId", "Certificate ID"],
   ["certificateNumber", "Certificate Number"],
   ["clientName", "Client Name"],
   ["companyName", "Company Name"],
