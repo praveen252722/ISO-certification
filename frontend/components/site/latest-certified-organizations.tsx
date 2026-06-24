@@ -12,7 +12,6 @@ interface OrganizationApiRecord {
   title: string;
   description?: string;
   imageUrl?: string;
-  imageUrl2?: string;
   certificationDate?: string;
   createdAt?: string;
 }
@@ -20,7 +19,6 @@ interface OrganizationApiRecord {
 interface DisplayProject {
   title: string;
   image: string;
-  image2: string;
   date: string;
   description: string;
 }
@@ -38,12 +36,10 @@ function formatProjectDate(value?: string) {
 }
 
 function mapOrganization(item: OrganizationApiRecord): DisplayProject {
-  console.log("Organization record:", item);
-  const primaryImage = item.imageUrl?.startsWith("/uploads/") ? "" : (item.imageUrl ?? "");
+  const imageUrl = item.imageUrl?.startsWith("/uploads/") ? "" : (item.imageUrl ?? "");
   return {
     title: item.title,
-    image: primaryImage,
-    image2: item.imageUrl2 ?? "",
+    image: imageUrl,
     date: formatProjectDate(item.certificationDate ?? item.createdAt),
     description: item.description ?? "Certification support completed with verified documentation."
   };

@@ -6,8 +6,7 @@ import {
   listAdminOrganizations,
   listOrganizations,
   updateOrganization,
-  uploadOrganizationImage,
-  uploadOrganizationImage2
+  uploadOrganizationImage
 } from "../controllers/organization.controller.js";
 import { authenticate, authorize } from "../middleware/auth.middleware.js";
 import { upload } from "../middleware/upload.middleware.js";
@@ -34,8 +33,7 @@ function organizationPayloadValidators({ partial = false } = {}) {
     body("description").optional({ checkFalsy: true }).trim(),
     body("certificationDate").optional({ checkFalsy: true }).isISO8601().withMessage("Certification date must be a valid date"),
     body("status").optional().isIn(["Certified", "Active"]).withMessage("Status must be Certified or Active"),
-    optionalUrl("imageUrl"),
-    optionalUrl("imageUrl2")
+    optionalUrl("imageUrl")
   ];
 }
 
@@ -44,7 +42,6 @@ organizationRoutes.get("/", query("limit").optional().isInt({ min: 1, max: 100 }
 organizationRoutes.use(authenticate);
 organizationRoutes.get("/admin", authorize("ADMIN"), listAdminOrganizations);
 organizationRoutes.post("/upload-image", authorize("ADMIN"), upload.single("organizationImage"), uploadOrganizationImage);
-organizationRoutes.post("/upload-image2", authorize("ADMIN"), upload.single("organizationImage2"), uploadOrganizationImage2);
 organizationRoutes.post("/", authorize("ADMIN"), organizationPayloadValidators(), validate, createOrganization);
 organizationRoutes.put("/:id", authorize("ADMIN"), param("id").trim().notEmpty(), organizationPayloadValidators({ partial: true }), validate, updateOrganization);
 organizationRoutes.delete("/:id", authorize("ADMIN"), param("id").trim().notEmpty(), validate, deleteOrganization);

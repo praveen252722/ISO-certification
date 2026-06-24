@@ -1,14 +1,13 @@
 import { Organization } from "../models/Organization.js";
 import { ApiError } from "../utils/apiError.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
-import { uploadToCloudinary } from "../utils/cloudinary.js";
+import { uploadToCloudinary, deleteFromCloudinary } from "../utils/cloudinary.js";
 
 function organizationPayload(body) {
   const payload = {
     title: body.title?.trim(),
     description: body.description?.trim(),
     imageUrl: body.imageUrl?.trim(),
-    imageUrl2: body.imageUrl2?.trim(),
     status: body.status
   };
 
@@ -73,28 +72,19 @@ export const createOrganization = asyncHandler(async (req, res) => {
 });
 
 export const updateOrganization = asyncHandler(async (req, res) => {
-  const organization = await Organization.findByIdAndUpdate(req.params.id, organizationPayload(req.body), {
-    new: true,
-    runValidators: true
-  });
+  const existing = await Organization.findById(req.params.id);
+  if (!existing) throw new ApiError(404, "Organization not found");
 
-  if (!organization) throw new ApiError(404, "Organization not found");
-  res.json({ success: true, organization });
-});
+  const payload = organizationPayload(req.body);
 
-export const uploadOrganizationImage2 = asyncHandler(async (req, res) => {
-  if (!req.file) throw new ApiError(400, "Organization image file is required");
+  if (payload.imageUrl && payload.imageUrl !== existing.imageUrl && existing.publicId) {
+    await deleteFromCloudinary(existing.publicId).catch(() => {});
+  }
 
-  const { imageUrl, publicId } = await uploadToCloudinary(req.file.buffer, "organizations");
+  Object.assign(existing, payload);
+  await existing.save();
 
-  res.status(201).json({
-    success: true,
-    file: {
-      url: imageUrl,
-      publicId,
-      originalName: req.file.originalname
-    }
-  });
+  res.json({ success: true, organization: existing });
 });
 
 export const deleteOrganization = asyncHandler(async (req, res) => {
