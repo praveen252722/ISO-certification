@@ -9,27 +9,35 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 interface ProjectCardProps {
   title: string;
   image: string;
+  image2?: string;
   description: string;
   date: string;
   index: number;
 }
 
-export function ProjectCard({ title, image, description, date, index }: ProjectCardProps) {
+export function ProjectCard({ title, image, image2, description, date, index }: ProjectCardProps) {
+  const [currentSrc, setCurrentSrc] = useState(image || image2 || "");
   const [imageFailed, setImageFailed] = useState(false);
 
   return (
     <Card className="animate-stagger-pop overflow-hidden rounded-lg transition hover:-translate-y-1 hover:shadow-xl" style={{ animationDelay: `${index * 90}ms` }}>
       <div className="relative aspect-[16/9] overflow-hidden bg-slate-950">
         <div className="absolute inset-0 bg-slate-900" />
-        {!imageFailed ? (
+        {currentSrc && !imageFailed ? (
           <img
-            src={image}
+            src={currentSrc}
             alt={title}
             className="absolute inset-0 h-full w-full object-cover transition duration-700 hover:scale-105"
-            onError={() => setImageFailed(true)}
+            onError={() => {
+              if (currentSrc === image && image2) {
+                setCurrentSrc(image2);
+              } else {
+                setImageFailed(true);
+              }
+            }}
           />
         ) : null}
-        {imageFailed ? (
+        {!currentSrc || imageFailed ? (
           <div className="relative flex h-full flex-col items-center justify-center text-center text-amber-100">
             <ImageIcon className="mb-3 h-10 w-10" />
             <p className="max-w-48 text-sm font-bold uppercase tracking-normal">Add project photo</p>

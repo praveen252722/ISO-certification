@@ -32,6 +32,7 @@ interface OrganizationRecord {
   title: string;
   description?: string;
   imageUrl?: string;
+  imageUrl2?: string;
   certificationDate?: string;
   status: string;
 }
@@ -61,6 +62,7 @@ const emptyOrganization = {
   title: "",
   description: "",
   imageUrl: "",
+  imageUrl2: "",
   certificationDate: "",
   status: "Certified"
 };
@@ -215,12 +217,13 @@ export default function AdminPage() {
       .catch((exportError) => setError(exportError instanceof Error ? exportError.message : "Export failed"));
   }
 
-  async function uploadOrganizationImage(file?: File) {
+  async function uploadOrganizationImage(file?: File, slot: "imageUrl" | "imageUrl2" = "imageUrl") {
     if (!file) return "";
     const formData = new FormData();
-    formData.append("organizationImage", file);
+    formData.append(slot === "imageUrl2" ? "organizationImage2" : "organizationImage", file);
 
-    const response = await fetch(`${API_URL}/organizations/upload-image`, {
+    const endpoint = slot === "imageUrl2" ? "/organizations/upload-image2" : "/organizations/upload-image";
+    const response = await fetch(`${API_URL}${endpoint}`, {
       method: "POST",
       headers: { Authorization: `Bearer ${token}` },
       body: formData
@@ -231,15 +234,15 @@ export default function AdminPage() {
     return data.file.url as string;
   }
 
-  async function handleOrganizationImageChange(event: ChangeEvent<HTMLInputElement>) {
+  async function handleOrganizationImageChange(event: ChangeEvent<HTMLInputElement>, slot: "imageUrl" | "imageUrl2" = "imageUrl") {
     const file = event.target.files?.[0];
     if (!file) return;
     setLoading(true);
     setError("");
     try {
-      const url = await uploadOrganizationImage(file);
-      setOrganizationForm((current) => ({ ...current, imageUrl: url }));
-      setNotice("Organization image uploaded.");
+      const url = await uploadOrganizationImage(file, slot);
+      setOrganizationForm((current) => ({ ...current, [slot]: url }));
+      setNotice(`Organization ${slot === "imageUrl2" ? "secondary " : ""}image uploaded.`);
     } catch (uploadError) {
       setError(uploadError instanceof Error ? uploadError.message : "Image upload failed");
     } finally {
@@ -275,6 +278,7 @@ export default function AdminPage() {
       title: org.title ?? "",
       description: org.description ?? "",
       imageUrl: org.imageUrl ?? "",
+      imageUrl2: org.imageUrl2 ?? "",
       certificationDate: org.certificationDate?.slice(0, 10) ?? "",
       status: org.status ?? "Certified"
     });
@@ -497,13 +501,15 @@ function OrganizationsPanel({ form, setForm, onSubmit, onImageChange, organizati
   form: typeof emptyOrganization;
   setForm: (value: typeof emptyOrganization) => void;
   onSubmit: (event: FormEvent<HTMLFormElement>) => void;
-  onImageChange: (event: ChangeEvent<HTMLInputElement>) => void;
+  onImageChange: (event: ChangeEvent<HTMLInputElement>, slot?: "imageUrl" | "imageUrl2") => void;
   organizations: OrganizationRecord[];
   removeOrganization: (id: string) => void;
   editOrganization: (org: OrganizationRecord) => void;
   editingOrganizationId: string;
   setEditingOrganizationId: (value: string) => void;
 }) {
+  const image1 = form.imageUrl;
+  const image2 = form.imageUrl2;
   return (
     <div className="grid gap-5 xl:grid-cols-[460px_1fr]">
       <Card>
@@ -512,8 +518,12 @@ function OrganizationsPanel({ form, setForm, onSubmit, onImageChange, organizati
           <form onSubmit={onSubmit} className="grid gap-3">
             <Input placeholder="Title" value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} required />
             <Textarea placeholder="Description" value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} />
-            <Input type="file" accept="image/png,image/jpeg" onChange={onImageChange} />
-            {form.imageUrl ? <p className="truncate text-xs text-muted-foreground">{form.imageUrl}</p> : null}
+            <label className="text-xs font-medium text-muted-foreground">Primary image</label>
+            <Input type="file" accept="image/png,image/jpeg" onChange={(e) => onImageChange(e, "imageUrl")} />
+            {image1 ? <p className="truncate text-xs text-muted-foreground">{image1}</p> : null}
+            <label className="text-xs font-medium text-muted-foreground">Secondary image</label>
+            <Input type="file" accept="image/png,image/jpeg" onChange={(e) => onImageChange(e, "imageUrl2")} />
+            {image2 ? <p className="truncate text-xs text-muted-foreground">{image2}</p> : null}
             <Input type="date" value={form.certificationDate} onChange={(e) => setForm({ ...form, certificationDate: e.target.value })} />
             <select className="h-10 rounded-md border bg-background px-3 text-sm" value={form.status} onChange={(e) => setForm({ ...form, status: e.target.value })}>
               <option>Certified</option>
@@ -528,7 +538,8 @@ function OrganizationsPanel({ form, setForm, onSubmit, onImageChange, organizati
       </Card>
       <TableCard title="Organizations">
         {organizations.map((org) => {
-          const image = org.imageUrl;
+          const primaryImage = org.imageUrl?.startsWith("/uploads/") ? (org.imageUrl2 ?? "") : (org.imageUrl ?? "");
+          const secondaryImage = org.imageUrl2;
           return (
             <div key={org._id} className="grid gap-3 border-b p-4 xl:grid-cols-[1.2fr_1fr_0.8fr_auto] xl:items-center">
               <div>
@@ -538,7 +549,8 @@ function OrganizationsPanel({ form, setForm, onSubmit, onImageChange, organizati
               <span className="text-sm text-muted-foreground">{org.certificationDate ? new Date(org.certificationDate).toLocaleDateString() : "-"}</span>
               <Badge variant={org.status === "Certified" ? "success" : "outline"}>{org.status}</Badge>
               <div className="flex gap-2">
-                {image ? <Button asChild size="sm" variant="outline"><a href={image} target="_blank" rel="noreferrer"><ImageIcon className="h-4 w-4" /></a></Button> : null}
+                {primaryImage ? <Button asChild size="sm" variant="outline"><a href={primaryImage} target="_blank" rel="noreferrer"><ImageIcon className="h-4 w-4" /></a></Button> : null}
+                {secondaryImage && secondaryImage !== primaryImage ? <Button asChild size="sm" variant="outline"><a href={secondaryImage} target="_blank" rel="noreferrer"><ImageIcon className="h-4 w-4" /></a></Button> : null}
                 <Button size="sm" variant="outline" onClick={() => editOrganization(org)}>Edit</Button>
                 <Button size="sm" variant="destructive" onClick={() => removeOrganization(org._id ?? "")}>Delete</Button>
               </div>

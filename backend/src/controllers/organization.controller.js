@@ -8,6 +8,7 @@ function organizationPayload(body) {
     title: body.title?.trim(),
     description: body.description?.trim(),
     imageUrl: body.imageUrl?.trim(),
+    imageUrl2: body.imageUrl2?.trim(),
     status: body.status
   };
 
@@ -79,6 +80,21 @@ export const updateOrganization = asyncHandler(async (req, res) => {
 
   if (!organization) throw new ApiError(404, "Organization not found");
   res.json({ success: true, organization });
+});
+
+export const uploadOrganizationImage2 = asyncHandler(async (req, res) => {
+  if (!req.file) throw new ApiError(400, "Organization image file is required");
+
+  const { imageUrl, publicId } = await uploadToCloudinary(req.file.buffer, "organizations");
+
+  res.status(201).json({
+    success: true,
+    file: {
+      url: imageUrl,
+      publicId,
+      originalName: req.file.originalname
+    }
+  });
 });
 
 export const deleteOrganization = asyncHandler(async (req, res) => {
