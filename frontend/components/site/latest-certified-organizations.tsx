@@ -23,12 +23,6 @@ interface DisplayProject {
   description: string;
 }
 
-function resolveImageUrl(value?: string) {
-  if (!value) return "";
-  if (value.startsWith("/uploads/")) return `${API_URL.replace(/\/api\/v1$/, "")}${value}`;
-  return value;
-}
-
 function formatProjectDate(value?: string) {
   if (!value) return "";
   const date = new Date(value);
@@ -44,7 +38,7 @@ function formatProjectDate(value?: string) {
 function mapOrganization(item: OrganizationApiRecord): DisplayProject {
   return {
     title: item.title,
-    image: resolveImageUrl(item.imageUrl),
+    image: item.imageUrl ?? "",
     date: formatProjectDate(item.certificationDate ?? item.createdAt),
     description: item.description ?? "Certification support completed with verified documentation."
   };

@@ -16,6 +16,7 @@ const projectSchema = new mongoose.Schema(
     certificationType: String,
     summary: String,
     imageUrl: String,
+    publicId: String,
     certifiedDate: { type: Date, default: Date.now },
     isPublished: { type: Boolean, default: true, index: true }
   },

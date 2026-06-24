@@ -2,7 +2,7 @@ import multer from "multer";
 import { ApiError } from "../utils/apiError.js";
 
 const storage = multer.memoryStorage();
-const allowedTypes = ["application/pdf", "image/png", "image/jpeg", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"];
+const allowedTypes = ["image/png", "image/jpeg", "image/webp", "image/gif"];
 
 export const upload = multer({
   storage,

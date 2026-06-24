@@ -2,6 +2,7 @@ import { User } from "../models/User.js";
 import { Setting } from "../models/Setting.js";
 import { ApiError } from "../utils/apiError.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
+import { uploadToCloudinary } from "../utils/cloudinary.js";
 
 export const getSettings = asyncHandler(async (req, res) => {
   const settings = await Setting.find().sort("key");
@@ -53,13 +54,13 @@ export const uploadLogo = asyncHandler(async (req, res) => {
     throw new ApiError(400, "No file uploaded");
   }
 
-  const dataUrl = `data:${req.file.mimetype};base64,${req.file.buffer.toString("base64")}`;
+  const { imageUrl } = await uploadToCloudinary(req.file.buffer, "logos");
 
   await Setting.findOneAndUpdate(
     { key: "logo" },
-    { key: "logo", value: dataUrl },
+    { key: "logo", value: imageUrl },
     { upsert: true }
   );
 
-  res.json({ success: true, message: "Logo uploaded", url: dataUrl });
+  res.json({ success: true, message: "Logo uploaded", url: imageUrl });
 });

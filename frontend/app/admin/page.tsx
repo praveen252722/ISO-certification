@@ -1,6 +1,6 @@
 "use client";
 
-import { ChangeEvent, FormEvent, useEffect, useMemo, useState } from "react";
+import { ChangeEvent, FormEvent, useEffect, useState } from "react";
 import { Building2, Download, FileCheck2, ImageIcon, LayoutDashboard, Loader2, LogOut, Plus, RefreshCw, Search, ShieldCheck } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -81,8 +81,6 @@ export default function AdminPage() {
   const [organizations, setOrganizations] = useState<OrganizationRecord[]>([]);
   const [organizationForm, setOrganizationForm] = useState(emptyOrganization);
   const [editingOrganizationId, setEditingOrganizationId] = useState("");
-
-  const apiBase = useMemo(() => API_URL.replace(/\/api\/v1$/, ""), []);
 
   useEffect(() => {
     const savedToken = localStorage.getItem("vj_admin_token");
@@ -230,8 +228,7 @@ export default function AdminPage() {
 
     const data = await response.json();
     if (!response.ok) throw new Error(data.message ?? "Image upload failed");
-    const url = data.file.url as string;
-    return url.startsWith("/uploads/") ? `${apiBase}${url}` : url;
+    return data.file.url as string;
   }
 
   async function handleOrganizationImageChange(event: ChangeEvent<HTMLInputElement>) {
@@ -382,7 +379,6 @@ export default function AdminPage() {
             editOrganization={editOrganization}
             editingOrganizationId={editingOrganizationId}
             setEditingOrganizationId={setEditingOrganizationId}
-            apiBase={apiBase}
           />
         ) : null}
       </section>
@@ -497,7 +493,7 @@ function CertificatesPanel({ form, setForm, onSubmit, certificates, search, setS
   );
 }
 
-function OrganizationsPanel({ form, setForm, onSubmit, onImageChange, organizations, removeOrganization, editOrganization, editingOrganizationId, setEditingOrganizationId, apiBase }: {
+function OrganizationsPanel({ form, setForm, onSubmit, onImageChange, organizations, removeOrganization, editOrganization, editingOrganizationId, setEditingOrganizationId }: {
   form: typeof emptyOrganization;
   setForm: (value: typeof emptyOrganization) => void;
   onSubmit: (event: FormEvent<HTMLFormElement>) => void;
@@ -507,7 +503,6 @@ function OrganizationsPanel({ form, setForm, onSubmit, onImageChange, organizati
   editOrganization: (org: OrganizationRecord) => void;
   editingOrganizationId: string;
   setEditingOrganizationId: (value: string) => void;
-  apiBase: string;
 }) {
   return (
     <div className="grid gap-5 xl:grid-cols-[460px_1fr]">
@@ -533,7 +528,7 @@ function OrganizationsPanel({ form, setForm, onSubmit, onImageChange, organizati
       </Card>
       <TableCard title="Organizations">
         {organizations.map((org) => {
-          const image = org.imageUrl?.startsWith("/uploads/") ? `${apiBase}${org.imageUrl}` : org.imageUrl;
+          const image = org.imageUrl;
           return (
             <div key={org._id} className="grid gap-3 border-b p-4 xl:grid-cols-[1.2fr_1fr_0.8fr_auto] xl:items-center">
               <div>

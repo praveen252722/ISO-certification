@@ -1,8 +1,7 @@
 import { Organization } from "../models/Organization.js";
 import { ApiError } from "../utils/apiError.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
-import { mkdir, writeFile } from "fs/promises";
-import { extname, join } from "path";
+import { uploadToCloudinary } from "../utils/cloudinary.js";
 
 function organizationPayload(body) {
   const payload = {
@@ -55,18 +54,13 @@ export const listAdminOrganizations = asyncHandler(async (req, res) => {
 export const uploadOrganizationImage = asyncHandler(async (req, res) => {
   if (!req.file) throw new ApiError(400, "Organization image file is required");
 
-  const extension = extname(req.file.originalname).toLowerCase() || ".jpg";
-  const filename = `${Date.now()}-${Math.random().toString(36).slice(2)}${extension}`;
-  const uploadDir = join(process.cwd(), "uploads", "organizations");
-  await mkdir(uploadDir, { recursive: true });
-  await writeFile(join(uploadDir, filename), req.file.buffer);
+  const { imageUrl, publicId } = await uploadToCloudinary(req.file.buffer, "organizations");
 
-  const url = `/uploads/organizations/${filename}`;
   res.status(201).json({
     success: true,
     file: {
-      url,
-      publicId: `organizations/${filename}`,
+      url: imageUrl,
+      publicId,
       originalName: req.file.originalname
     }
   });

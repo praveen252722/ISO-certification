@@ -1,8 +1,7 @@
 import { Project } from "../models/Project.js";
 import { ApiError } from "../utils/apiError.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
-import { mkdir, writeFile } from "fs/promises";
-import { extname, join } from "path";
+import { uploadToCloudinary } from "../utils/cloudinary.js";
 
 function projectLookup(value) {
   if (/^[a-f\d]{24}$/i.test(value)) return { _id: value };
@@ -64,18 +63,13 @@ export const listAdminProjects = asyncHandler(async (req, res) => {
 export const uploadProjectImage = asyncHandler(async (req, res) => {
   if (!req.file) throw new ApiError(400, "Project image file is required");
 
-  const extension = extname(req.file.originalname).toLowerCase() || ".jpg";
-  const filename = `${Date.now()}-${Math.random().toString(36).slice(2)}${extension}`;
-  const uploadDir = join(process.cwd(), "uploads", "projects");
-  await mkdir(uploadDir, { recursive: true });
-  await writeFile(join(uploadDir, filename), req.file.buffer);
+  const { imageUrl, publicId } = await uploadToCloudinary(req.file.buffer, "projects");
 
-  const url = `/uploads/projects/${filename}`;
   res.status(201).json({
     success: true,
     file: {
-      url,
-      publicId: `projects/${filename}`,
+      url: imageUrl,
+      publicId,
       originalName: req.file.originalname
     }
   });
